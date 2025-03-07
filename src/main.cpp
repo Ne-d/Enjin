@@ -1,8 +1,8 @@
+// ReSharper disable CppInconsistentNaming
 #include <iostream>
 #include <vector>
 
 #define SDL_MAIN_USE_CALLBACKS 1
-#define SDL_HINT_RENDER_VSYNC 1
 
 #include <thread>
 #include <chrono>
@@ -10,7 +10,9 @@
 #include "SDL.h"
 #include "SDL_main.h"
 #include "SDL_video.h"
+#include "World.h"
 
+using namespace Naito;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
@@ -30,6 +32,8 @@ time_point<steady_clock> prev;
 unsigned int frameCount = 0;
 double averageFrameRate = 0;
 
+World* world;
+
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialise SDL: %s", SDL_GetError());
@@ -41,8 +45,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
         return SDL_APP_FAILURE;
     }
 
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH,
+                                SCREEN_HEIGHT);
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+
+    world = new World(SCREEN_WIDTH, SCREEN_HEIGHT);
+    world->setCell(10, 10, Cell{Element::Sand});
 
     start = steady_clock::now();
 
@@ -57,8 +65,9 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     case SDL_EVENT_KEY_DOWN:
         if (event->key.scancode == SDL_SCANCODE_ESCAPE)
             return SDL_APP_SUCCESS;
+
     default:
-        return SDL_APP_CONTINUE;
+        break;
     }
 
     return SDL_APP_CONTINUE;
@@ -68,40 +77,28 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 SDL_AppResult SDL_AppIterate(void* appstate) {
     time_point<steady_clock> frameStart;
     prev = now;
+
+    SDL_PumpEvents();
+    const bool* keyboardState = SDL_GetKeyboardState(nullptr);
+    if (keyboardState[SDL_SCANCODE_SPACE])
+        world->setCell(10, 10, Cell{Element::Sand});
+
+    // Update world
+    world->updateCells();
+    world->drawCells(surface, texture, renderer);
+
     // Update displayed frame
-    //SDL_SetRenderDrawColorFloat(renderer, 1, 0, 1, SDL_ALPHA_OPAQUE_FLOAT);
-
-    SDL_LockTextureToSurface(texture, nullptr, &surface);
-
-    auto* pixels = (Uint32*)surface->pixels;
-    const auto formatDetails = SDL_GetPixelFormatDetails(surface->format);
-
-    for (int x = 0; x < SCREEN_WIDTH; ++x) {
-        for (int y = SCREEN_HEIGHT - 1; y >= 0; --y) {
-            const int offset = x + surface->pitch / sizeof(Uint32) * y;
-            *(pixels + offset) = SDL_MapRGBA(formatDetails, nullptr, 20, 40, 60, SDL_ALPHA_OPAQUE);
-        }
-    }
-
-    SDL_UnlockTexture(texture);
-
-
-    SDL_RenderClear(renderer);
-    SDL_RenderTexture(renderer, texture, nullptr, nullptr);
-
     SDL_RenderPresent(renderer);
 
-    now = steady_clock::now();
-    duration frameTime = now - prev;
-    double frameRate = 1'000'000'000.0 / duration_cast<nanoseconds>(frameTime).count();
-    averageFrameRate = (double)frameCount / (double)(now - start).count() * 1'000'000'000;
-
-    //std::cout << "Framerate: " << frameRate << " FPS, average: " << averageFrameRate << " FPS\n";
-
     frameCount++;
+
+    std::this_thread::sleep_for(16.6ms);
+
     return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result) {
+    now = steady_clock::now();
+    averageFrameRate = static_cast<double>(frameCount) / static_cast<double>((now - start).count()) * 1'000'000'000;
     std::cout << "Average framerate: " << averageFrameRate << " FPS\n";
 }
