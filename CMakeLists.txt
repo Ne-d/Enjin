@@ -32,6 +32,8 @@ add_executable(Enjin
         src/Cell.h
         src/Random.cpp
         src/Random.h
+        src/CellGrid.cpp
+        src/CellGrid.h
 )
 
 target_include_directories(Enjin PRIVATE

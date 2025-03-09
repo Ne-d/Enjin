@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Cell.h"
+#include "CellGrid.h"
 
 
 namespace Naito {
@@ -16,21 +17,15 @@ public:
     World(size_t width, size_t height);
     ~World();
 
-    // Cells
-    [[nodiscard]] Cell getCell(int x, int y) const;
-    void setCell(int x, int y, Cell cell);
-    void swapCells(int x, int y, int dx, int dy);
+    void update();
 
-    void updateCells();
     void drawCells(SDL_Surface* surface, SDL_Texture* texture, SDL_Renderer* renderer) const;
 
-    void swapBuffers();
-
     [[nodiscard]] unsigned long long getClock() const;
+    [[nodiscard]] CellGrid& getCellGrid();
 
 private:
-    std::vector<Cell> cells;
-    std::vector<Cell> nextCells;
+    CellGrid grid;
 
     unsigned long long clock;
 

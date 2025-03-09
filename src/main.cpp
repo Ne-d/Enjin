@@ -50,7 +50,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
     world = new World(SCREEN_WIDTH, SCREEN_HEIGHT);
-    world->setCell(10, 10, Cell{Element::Sand});
+    world->getCellGrid().setCell(10, 10, Cell{Element::Sand});
 
     start = steady_clock::now();
 
@@ -81,10 +81,10 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_PumpEvents();
     const bool* keyboardState = SDL_GetKeyboardState(nullptr);
     if (keyboardState[SDL_SCANCODE_SPACE])
-        world->setCell(10, 10, Cell{Element::Sand});
+        world->getCellGrid().setCell(10, 10, Cell{Element::Sand});
 
     // Update world
-    world->updateCells();
+    world->getCellGrid().update();
     world->drawCells(surface, texture, renderer);
 
     // Update displayed frame
