@@ -15,6 +15,14 @@ void Cell::setClock(const bool clock) {
     this->clock = clock;
 }
 
+bool Cell::isEmpty() const {
+    return element == Element::Empty;
+}
+
+bool Cell::isLiquid() const {
+    return element == Element::Water;
+}
+
 SDL_Color cellColor(const Cell cell) {
     switch (cell.element) {
     case Element::Sand:

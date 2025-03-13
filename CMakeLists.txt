@@ -3,8 +3,9 @@ project(Enjin)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(DEPENDENCIES_ROOT deps)
+set(DEPS_ROOT deps)
 set(SOURCE_ROOT src)
+set(TESTS_ROOT src/Tests)
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
@@ -16,7 +17,7 @@ option(SDL_VENDORED "Use vendored libraries" ON)
 
 if (SDL_VENDORED)
     # This assumes you have added SDL as a submodule in vendored/SDL
-    add_subdirectory(${DEPENDENCIES_ROOT}/SDL EXCLUDE_FROM_ALL)
+    add_subdirectory(${DEPS_ROOT}/SDL EXCLUDE_FROM_ALL)
 else ()
     # 1. Look for a SDL3 package,
     # 2. look for the SDL3-shared component, and
@@ -39,9 +40,49 @@ add_executable(Naito
 target_include_directories(Naito PRIVATE
         ${SOURCE_ROOT}/Engine
         ${SOURCE_ROOT}/Naito
+
         deps/SDL/include/SDL3
 )
 
 target_link_libraries(Naito PRIVATE
         SDL3::SDL3
 )
+
+
+# TESTS
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+add_subdirectory(${DEPS_ROOT}/googletest EXCLUDE_FROM_ALL)
+enable_testing()
+
+
+add_executable(Tests
+        ${SOURCE_ROOT}/Engine/World.cpp
+        ${SOURCE_ROOT}/Engine/World.h
+        ${SOURCE_ROOT}/Engine/Cell.cpp
+        ${SOURCE_ROOT}/Engine/Cell.h
+        ${SOURCE_ROOT}/Engine/Random.cpp
+        ${SOURCE_ROOT}/Engine/Random.h
+        ${SOURCE_ROOT}/Engine/CellGrid.cpp
+        ${SOURCE_ROOT}/Engine/CellGrid.h
+        src/Tests/RandomTests.cpp
+
+
+)
+
+target_include_directories(Tests PRIVATE
+        ${SOURCE_ROOT}/Engine
+        ${SOURCE_ROOT}/Naito
+        ${SOURCE_ROOT}/Tests
+
+        deps/SDL/include/SDL3
+        deps/googletest/googletest/include
+)
+
+target_link_libraries(Tests PRIVATE
+        SDL3::SDL3
+        GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(Tests)

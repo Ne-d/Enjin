@@ -34,6 +34,9 @@ public:
 
     [[nodiscard]] bool getClock() const;
     void setClock(bool clock);
+
+    [[nodiscard]] bool isEmpty() const;
+    [[nodiscard]] bool isLiquid() const;
 };
 
 

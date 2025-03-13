@@ -44,7 +44,7 @@ void CellGrid::swapCells(const Uint16 x, const Uint16 y, const Uint16 dx, const 
 }
 
 void CellGrid::update() {
-    //    setCell(10, 10, Cell{Element::Sand, UPDATE});
+    setCell(10, 10, Cell{Element::Sand, UPDATE});
 
     for (unsigned int y = height - 1; y > 0; --y) {
         for (unsigned int x = 0; x < width; ++x) {
@@ -70,22 +70,22 @@ void CellGrid::update() {
 }
 
 void CellGrid::updateSand(const Uint16 x, const Uint16 y) {
-    const short randomDir = randomDirection();
-
-    if (getCell(x, y + 1).element == Element::Empty) {
-        setCell(x, y + 1, Cell{Element::Sand, DONT_UPDATE});
-        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+    const Cell down = getCell(x, y + 1);
+    if (down.isEmpty() || down.isLiquid()) {
+        swapCells(x, y, 0, 1);
+        return;
     }
 
-    else if (getCell(x + randomDir, y + 1).element == Element::Empty) {
-        setCell(x + randomDir, y + 1, Cell{Element::Sand, DONT_UPDATE});
-        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+    const int randomDir = randomDirection();
+    const Cell downRand = getCell(x + randomDir, y + 1);
+    if (downRand.isEmpty() || downRand.isLiquid()) {
+        swapCells(x, y, randomDir, 1);
+        return;
     }
 
-    else if (getCell(x - randomDir, y + 1).element == Element::Empty) {
-        setCell(x - randomDir, y + 1, Cell{Element::Sand, DONT_UPDATE});
-        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
-    }
+    const Cell downRandMirror = getCell(x - randomDir, y + 1);
+    if (downRandMirror.isEmpty() || downRandMirror.isLiquid())
+        swapCells(x, y, -randomDir, 1);
 }
 
 void CellGrid::updateWater(const Uint16 x, const Uint16 y) {
