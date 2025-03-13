@@ -1,9 +1,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <SDL_render.h>
-#include <SDL_surface.h>
-#include <vector>
+#include "SDL_render.h"
+#include "SDL_surface.h"
 
 #include "Cell.h"
 #include "CellGrid.h"

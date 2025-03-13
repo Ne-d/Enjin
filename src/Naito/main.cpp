@@ -1,6 +1,5 @@
 // ReSharper disable CppInconsistentNaming
 #include <iostream>
-#include <vector>
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
@@ -50,7 +49,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
     world = new World(SCREEN_WIDTH, SCREEN_HEIGHT);
-    world->getCellGrid().setCell(10, 10, Cell{Element::Sand});
+
+    for (int y = 50; y < 100; ++y) {
+        for (int x = 50; x < 100; ++x) {
+            world->getCellGrid().setCell(x, y, Cell{Element::Water, world->getCellGrid().getClock()});
+        }
+    }
 
     start = steady_clock::now();
 
@@ -75,13 +79,12 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 
 
 SDL_AppResult SDL_AppIterate(void* appstate) {
-    time_point<steady_clock> frameStart;
     prev = now;
 
     SDL_PumpEvents();
     const bool* keyboardState = SDL_GetKeyboardState(nullptr);
     if (keyboardState[SDL_SCANCODE_SPACE])
-        world->getCellGrid().setCell(10, 10, Cell{Element::Sand});
+        world->getCellGrid().setCell(10, 10, Cell{Element::Sand, world->getCellGrid().getClock()});
 
     // Update world
     world->getCellGrid().update();

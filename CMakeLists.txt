@@ -24,22 +24,24 @@ else ()
     find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 endif ()
 
-add_executable(Enjin
-        ${SOURCE_ROOT}/main.cpp
-        src/World.cpp
-        src/World.h
-        src/Cell.cpp
-        src/Cell.h
-        src/Random.cpp
-        src/Random.h
-        src/CellGrid.cpp
-        src/CellGrid.h
+add_executable(Naito
+        ${SOURCE_ROOT}/Naito/main.cpp
+        ${SOURCE_ROOT}/Engine/World.cpp
+        ${SOURCE_ROOT}/Engine/World.h
+        ${SOURCE_ROOT}/Engine/Cell.cpp
+        ${SOURCE_ROOT}/Engine/Cell.h
+        ${SOURCE_ROOT}/Engine/Random.cpp
+        ${SOURCE_ROOT}/Engine/Random.h
+        ${SOURCE_ROOT}/Engine/CellGrid.cpp
+        ${SOURCE_ROOT}/Engine/CellGrid.h
 )
 
-target_include_directories(Enjin PRIVATE
+target_include_directories(Naito PRIVATE
+        ${SOURCE_ROOT}/Engine
+        ${SOURCE_ROOT}/Naito
         deps/SDL/include/SDL3
 )
 
-target_link_libraries(Enjin PRIVATE
+target_link_libraries(Naito PRIVATE
         SDL3::SDL3
 )

@@ -22,7 +22,18 @@ enum class Element : uint8_t {
 
 
 struct Cell {
+    // Data
     Element element;
+
+private:
+    uint8_t clock{};
+
+    // Methods
+public:
+    Cell(Element element, bool clock);
+
+    [[nodiscard]] bool getClock() const;
+    void setClock(bool clock);
 };
 
 
