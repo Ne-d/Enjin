@@ -9,6 +9,11 @@
 #include "SDL.h"
 #include "SDL_main.h"
 #include "SDL_video.h"
+
+#include "imgui.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
+
 #include "World.h"
 
 using namespace Naito;
@@ -39,10 +44,28 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Naito", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Naito", SCREEN_WIDTH, SCREEN_HEIGHT,
+                                     SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY, &window, &renderer)) {
         SDL_Log("Couldn't create window and renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // IF using Docking Branch
+
+    io.Fonts->Build();
+
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer3_Init(renderer);
 
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH,
                                 SCREEN_HEIGHT);
@@ -62,6 +85,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 }
 
 SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
+    ImGui_ImplSDL3_ProcessEvent(event); // Forward your event to backend
+
     switch (event->type) {
     case SDL_EVENT_QUIT:
         return SDL_APP_SUCCESS;
@@ -79,6 +104,11 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 
 
 SDL_AppResult SDL_AppIterate(void* appstate) {
+    // Start the Dear ImGui frame
+    ImGui_ImplSDL3_NewFrame();
+    ImGui_ImplSDLRenderer3_NewFrame();
+    ImGui::NewFrame();
+
     prev = now;
 
     SDL_PumpEvents();
@@ -89,14 +119,16 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // Update world
     world->getCellGrid().update();
     world->drawCells(surface, texture, renderer);
+    world->getCellGrid().drawGui();
+
+    ImGui::Render();
 
     // Update displayed frame
+    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
     SDL_RenderPresent(renderer);
 
     frameCount++;
-
     std::this_thread::sleep_for(16.6ms);
-
     return SDL_APP_CONTINUE;
 }
 
@@ -104,4 +136,8 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result) {
     now = steady_clock::now();
     averageFrameRate = static_cast<double>(frameCount) / static_cast<double>((now - start).count()) * 1'000'000'000;
     std::cout << "Average framerate: " << averageFrameRate << " FPS\n";
+
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
 }

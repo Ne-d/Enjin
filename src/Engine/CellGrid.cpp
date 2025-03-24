@@ -1,5 +1,8 @@
 #include "CellGrid.h"
 
+#include <array>
+#include <imgui.h>
+
 #include "Random.h"
 #include "World.h"
 
@@ -44,7 +47,7 @@ void CellGrid::swapCells(const Uint16 x, const Uint16 y, const Uint16 dx, const 
 }
 
 void CellGrid::update() {
-    setCell(10, 10, Cell{Element::Sand, UPDATE});
+    //setCell(10, 10, Cell{Element::Sand, UPDATE});
 
     for (unsigned int y = height - 1; y > 0; --y) {
         for (unsigned int x = 0; x < width; ++x) {
@@ -103,13 +106,43 @@ void CellGrid::updateWater(const Uint16 x, const Uint16 y) {
 
     else if (getCell(x + randomDir, y).element == Element::Empty)
         swapCells(x, y, randomDir, 0);
+}
 
-    else if (getCell(x - randomDir, y).element == Element::Empty)
-        swapCells(x, y, -randomDir, 0);
+bool CellGrid::drawGui() {
+    ImGui::Begin("Cell Grid");
+
+#ifndef NDEBUG // Pretty expensive
+    const auto elementCounts = countCells();
+
+    for (unsigned int i = 0; i < static_cast<int>(Element::Count); ++i) {
+        std::string name = elementName(static_cast<Element>(i));
+        ImGui::Value(name.c_str(), elementCounts.at(i));
+    }
+#else
+    ImGui::Text("Element cell count disabled for performance");
+#endif
+
+    ImGui::End();
+
+    return true;
 }
 
 bool CellGrid::getClock() const {
     return clock;
+}
+
+std::array<unsigned int, static_cast<int>(Element::Count)> CellGrid::countCells() const {
+    std::array<unsigned int, static_cast<int>(Element::Count)> counts{};
+    counts.fill(0);
+
+    for (Uint16 y = 0; y < height; ++y) {
+        for (Uint16 x = 0; x < width; ++x) {
+            const Cell cell = getCell(x, y);
+            counts.at(static_cast<int>(cell.element))++;
+        }
+    }
+
+    return counts;
 }
 
 }

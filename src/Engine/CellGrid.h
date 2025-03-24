@@ -21,7 +21,12 @@ public:
     void updateSand(Uint16 x, Uint16 y);
     void updateWater(Uint16 x, Uint16 y);
 
+    bool drawGui();
+
     [[nodiscard]] bool getClock() const;
+
+private:
+    [[nodiscard]] std::array<unsigned int, static_cast<int>(Element::Count)> countCells() const;
 
 private:
     bool clock;

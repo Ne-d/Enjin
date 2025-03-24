@@ -25,7 +25,19 @@ else ()
     find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 endif ()
 
-add_executable(Naito
+
+# ==================== Naito ====================
+
+set(NAITO_SOURCE
+        ${DEPS_ROOT}/imgui/imgui.cpp
+        ${DEPS_ROOT}/imgui/imgui_demo.cpp
+        ${DEPS_ROOT}/imgui/imgui_draw.cpp
+        ${DEPS_ROOT}/imgui/imgui_tables.cpp
+        ${DEPS_ROOT}/imgui/imgui_widgets.cpp
+
+        ${DEPS_ROOT}/imgui/backends/imgui_impl_sdl3.cpp
+        ${DEPS_ROOT}/imgui/backends/imgui_impl_sdlrenderer3.cpp
+
         ${SOURCE_ROOT}/Naito/main.cpp
         ${SOURCE_ROOT}/Engine/World.cpp
         ${SOURCE_ROOT}/Engine/World.h
@@ -37,11 +49,21 @@ add_executable(Naito
         ${SOURCE_ROOT}/Engine/CellGrid.h
 )
 
-target_include_directories(Naito PRIVATE
+add_executable(Naito
+        ${NAITO_SOURCE}
+)
+
+set(NAITO_INCLUDE
         ${SOURCE_ROOT}/Engine
         ${SOURCE_ROOT}/Naito
 
-        deps/SDL/include/SDL3
+        ${DEPS_ROOT}/SDL/include/SDL3
+        ${DEPS_ROOT}/imgui/
+        ${DEPS_ROOT}/imgui/backends/
+)
+
+target_include_directories(Naito PRIVATE
+        ${NAITO_INCLUDE}
 )
 
 target_link_libraries(Naito PRIVATE
@@ -49,7 +71,7 @@ target_link_libraries(Naito PRIVATE
 )
 
 
-# TESTS
+# ==================== Tests ====================
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(${DEPS_ROOT}/googletest EXCLUDE_FROM_ALL)
@@ -57,22 +79,15 @@ enable_testing()
 
 
 add_executable(Tests
-        ${SOURCE_ROOT}/Engine/World.cpp
-        ${SOURCE_ROOT}/Engine/World.h
-        ${SOURCE_ROOT}/Engine/Cell.cpp
-        ${SOURCE_ROOT}/Engine/Cell.h
-        ${SOURCE_ROOT}/Engine/Random.cpp
-        ${SOURCE_ROOT}/Engine/Random.h
-        ${SOURCE_ROOT}/Engine/CellGrid.cpp
-        ${SOURCE_ROOT}/Engine/CellGrid.h
-        src/Tests/RandomTests.cpp
+        ${NAITO_SOURCE}
 
-
+        ${TESTS_ROOT}/RandomTests.cpp
 )
 
 target_include_directories(Tests PRIVATE
-        ${SOURCE_ROOT}/Engine
-        ${SOURCE_ROOT}/Naito
+        ${NAITO_INCLUDE}
+
+
         ${SOURCE_ROOT}/Tests
 
         deps/SDL/include/SDL3

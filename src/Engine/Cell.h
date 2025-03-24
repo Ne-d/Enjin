@@ -2,6 +2,7 @@
 #define SPECIES_H
 
 #include <cstdint>
+#include <string>
 
 #include "SDL.h"
 
@@ -17,7 +18,8 @@ enum class Element : uint8_t {
     Sand,
     Water,
     Lava,
-    Fire
+    Fire,
+    Count
 };
 
 
@@ -40,9 +42,8 @@ public:
 };
 
 
+std::string elementName(Element element);
 SDL_Color cellColor(Cell cell);
-
-void updateSand(World* world, uint16_t x, uint16_t y);
 
 } // Naito
 

@@ -23,6 +23,20 @@ bool Cell::isLiquid() const {
     return element == Element::Water;
 }
 
+std::string elementName(const Element element) {
+    switch (element) {
+    case Element::Empty: return "Empty";
+    case Element::Wall: return "Wall";
+    case Element::Dirt: return "Dirt";
+    case Element::Sand: return "Sand";
+    case Element::Water: return "Water";
+    case Element::Lava: return "Lava";
+    case Element::Fire: return "Fire";
+    case Element::Count: return "Count";
+    default: return "unknown";
+    }
+}
+
 SDL_Color cellColor(const Cell cell) {
     switch (cell.element) {
     case Element::Sand:
