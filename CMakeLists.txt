@@ -47,6 +47,9 @@ set(NAITO_SOURCE
         ${SOURCE_ROOT}/Engine/Random.h
         ${SOURCE_ROOT}/Engine/CellGrid.cpp
         ${SOURCE_ROOT}/Engine/CellGrid.h
+        ${SOURCE_ROOT}/Naito/Elements.cpp
+        ${SOURCE_ROOT}/Naito/Game.cpp
+        ${SOURCE_ROOT}/Naito/Game.h
 )
 
 add_executable(Naito

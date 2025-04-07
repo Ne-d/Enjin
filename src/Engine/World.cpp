@@ -10,8 +10,6 @@ World::World(const size_t width, const size_t height) : grid(width, height),
                                                         width(width),
                                                         height(height) {}
 
-World::~World() = default;
-
 void World::update() {
     grid.update();
 }

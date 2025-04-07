@@ -6,6 +6,7 @@
 #include <thread>
 #include <chrono>
 
+#include "Game.h"
 #include "SDL.h"
 #include "SDL_main.h"
 #include "SDL_video.h"
@@ -26,9 +27,6 @@ static SDL_Texture* texture;
 
 static SDL_Surface* surface;
 
-static constexpr unsigned int SCREEN_WIDTH = 256;
-static constexpr unsigned int SCREEN_HEIGHT = 192;
-
 time_point<steady_clock> start;
 time_point<steady_clock> now;
 time_point<steady_clock> prev;
@@ -37,6 +35,7 @@ unsigned int frameCount = 0;
 double averageFrameRate = 0;
 
 World* world;
+std::thread simulationThread;
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -71,15 +70,17 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
                                 SCREEN_HEIGHT);
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
-    world = new World(SCREEN_WIDTH, SCREEN_HEIGHT);
+    world = Game::get()->getWorld();
 
-    for (int y = 50; y < 100; ++y) {
+    /*for (int y = 50; y < 100; ++y) {
         for (int x = 50; x < 100; ++x) {
-            world->getCellGrid().setCell(x, y, Cell{Element::Water, world->getCellGrid().getClock()});
+            world->getCellGrid().setCell(x, y, Cell{Element::Water});
         }
-    }
+    }*/
 
     start = steady_clock::now();
+
+    simulationThread = std::thread(cellGridUpdateLoop, &world->getCellGrid());
 
     return SDL_APP_CONTINUE;
 }
@@ -117,7 +118,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         world->getCellGrid().setCell(10, 10, Cell{Element::Sand, world->getCellGrid().getClock()});
 
     // Update world
-    world->getCellGrid().update();
+    //world->getCellGrid().update();
     world->drawCells(surface, texture, renderer);
     world->getCellGrid().drawGui();
 
@@ -128,7 +129,6 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_RenderPresent(renderer);
 
     frameCount++;
-    std::this_thread::sleep_for(16.6ms);
     return SDL_APP_CONTINUE;
 }
 
@@ -136,6 +136,10 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result) {
     now = steady_clock::now();
     averageFrameRate = static_cast<double>(frameCount) / static_cast<double>((now - start).count()) * 1'000'000'000;
     std::cout << "Average framerate: " << averageFrameRate << " FPS\n";
+
+    Game::get()->quit();
+
+    simulationThread.join();
 
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();

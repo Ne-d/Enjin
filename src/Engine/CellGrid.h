@@ -21,21 +21,27 @@ public:
     void updateSand(Uint16 x, Uint16 y);
     void updateWater(Uint16 x, Uint16 y);
 
-    bool drawGui();
-
     [[nodiscard]] bool getClock() const;
+
+    void copyToFrontbuffer();
+
+    bool drawGui() const;
 
 private:
     [[nodiscard]] std::array<unsigned int, static_cast<int>(Element::Count)> countCells() const;
 
-private:
+    unsigned long long generation;
     bool clock;
 
-    std::vector<Cell>* cells;
+    std::vector<Cell> backbuffer;
+    std::vector<Cell> frontbuffer;
 
     Uint16 height;
     Uint16 width;
 };
+
+
+int cellGridUpdateLoop(CellGrid* cellGrid);
 
 }
 
