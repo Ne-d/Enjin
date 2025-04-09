@@ -17,7 +17,11 @@ CellGrid::CellGrid(const size_t width, const size_t height) :
     backbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
     frontbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
     height(height),
-    width(width) {
+    width(width),
+    desiredTickrate(60),
+    tickInterval(16),
+    actualTickrate(0),
+    actualTickDuration(0) {
     backbuffer.assign(width * height, Cell{Element::Empty, DONT_UPDATE});
     backbuffer.assign(width * height, Cell{Element::Empty, DONT_UPDATE});
 }
@@ -47,6 +51,7 @@ void CellGrid::swapCells(const Uint16 x, const Uint16 y, const Uint16 dx, const 
 void CellGrid::update() {
     using namespace std::chrono;
     const high_resolution_clock::time_point start = high_resolution_clock::now();
+    actualTickDuration = start - lastUpdate;
 
     if (getCell(10, 10).isEmpty())
         setCell(10, 10, Cell{Element::Sand, UPDATE});
@@ -74,9 +79,9 @@ void CellGrid::update() {
     clock = !clock;
     copyToFrontbuffer();
 
-    const high_resolution_clock::time_point end = high_resolution_clock::now();
-    actualTickDuration = end - start;
-    actualTickRate = 1'000'000'000.0f / static_cast<float>(duration_cast<nanoseconds>(actualTickDuration).count());
+    actualTickrate = 1'000'000'000.0f / static_cast<float>(duration_cast<nanoseconds>(actualTickDuration).count());
+
+    lastUpdate = start;
 }
 
 bool CellGrid::getClock() const {
@@ -92,10 +97,18 @@ void CellGrid::copyToFrontbuffer() {
     frontbuffer = std::vector(backbuffer);
 }
 
-bool CellGrid::drawGui() const {
+bool CellGrid::drawGui() {
+    using namespace std::chrono;
+
     ImGui::Begin("Cell Grid");
 
-    ImGui::Value("Tickrate: ", actualTickRate);
+    ImGui::Value("Tickrate: ", actualTickrate);
+    ImGui::Value("Tick duration: ", static_cast<float>(
+                     static_cast<double>(duration_cast<nanoseconds>(actualTickDuration).count()) / 1'000'000.0));
+
+    bool desiredTickrateChanged = ImGui::DragFloat("Desired Tickrate", &desiredTickrate, 1, 0, 1000);
+    if (desiredTickrateChanged)
+        tickInterval = round<nanoseconds>(duration<float>(1'000'000'000.0f / desiredTickrate)); // TODO: Test this
 
 #ifndef NDEBUG
     const auto elementCounts = countCells(); // Pretty expensive
@@ -135,5 +148,4 @@ int cellGridUpdateLoop(CellGrid* cellGrid) {
 
     return 0;
 }
-
 }

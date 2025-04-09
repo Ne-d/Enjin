@@ -26,7 +26,7 @@ public:
 
     void copyToFrontbuffer();
 
-    bool drawGui() const;
+    bool drawGui();
 
 private:
     [[nodiscard]] std::array<unsigned int, static_cast<int>(Element::Count)> countCells() const;
@@ -42,11 +42,11 @@ private:
     Uint16 height;
     Uint16 width;
 
-    float tickRate;
+    float desiredTickrate;
     std::chrono::high_resolution_clock::duration tickInterval;
     std::chrono::high_resolution_clock::time_point lastUpdate;
 
-    float actualTickRate;
+    float actualTickrate;
     std::chrono::high_resolution_clock::duration actualTickDuration;
 };
 
