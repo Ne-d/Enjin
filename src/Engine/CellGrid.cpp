@@ -45,6 +45,9 @@ void CellGrid::swapCells(const Uint16 x, const Uint16 y, const Uint16 dx, const 
 }
 
 void CellGrid::update() {
+    using namespace std::chrono;
+    const high_resolution_clock::time_point start = high_resolution_clock::now();
+
     if (getCell(10, 10).isEmpty())
         setCell(10, 10, Cell{Element::Sand, UPDATE});
 
@@ -70,6 +73,10 @@ void CellGrid::update() {
 
     clock = !clock;
     copyToFrontbuffer();
+
+    const high_resolution_clock::time_point end = high_resolution_clock::now();
+    actualTickDuration = end - start;
+    actualTickRate = 1'000'000'000.0f / static_cast<float>(duration_cast<nanoseconds>(actualTickDuration).count());
 }
 
 bool CellGrid::getClock() const {
@@ -88,8 +95,10 @@ void CellGrid::copyToFrontbuffer() {
 bool CellGrid::drawGui() const {
     ImGui::Begin("Cell Grid");
 
-#ifndef NDEBUG // Pretty expensive
-    const auto elementCounts = countCells();
+    ImGui::Value("Tickrate: ", actualTickRate);
+
+#ifndef NDEBUG
+    const auto elementCounts = countCells(); // Pretty expensive
 
     for (unsigned int i = 0; i < static_cast<int>(Element::Count); ++i) {
         std::string name = elementName(static_cast<Element>(i));

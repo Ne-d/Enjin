@@ -41,6 +41,13 @@ private:
 
     Uint16 height;
     Uint16 width;
+
+    float tickRate;
+    std::chrono::high_resolution_clock::duration tickInterval;
+    std::chrono::high_resolution_clock::time_point lastUpdate;
+
+    float actualTickRate;
+    std::chrono::high_resolution_clock::duration actualTickDuration;
 };
 
 

@@ -12,8 +12,9 @@ World::World(const size_t width, const size_t height)
       clock(0),
       width(width),
       height(height),
-      surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBX8888)) {
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+      surface(SDL_CreateSurface(static_cast<int>(width), static_cast<int>(height), SDL_PIXELFORMAT_RGBX8888)),
+      texture(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING,
+                                static_cast<int>(width), static_cast<int>(height))) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 }
 
@@ -23,7 +24,11 @@ void World::update() {
 
 
 void World::drawCells() {
+    // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
+    std::lock_guard guard(getCellGrid().getMutex());
+
     SDL_LockTextureToSurface(texture, nullptr, &surface);
+
 
     // As unclean as that is, it seems to be the way to go with SDL
     auto* pixels = static_cast<Uint32*>(surface->pixels);
@@ -38,9 +43,7 @@ void World::drawCells() {
     }
 
     SDL_UnlockTexture(texture);
-
-    const bool res = SDL_RenderTexture(renderer, texture, nullptr, nullptr);
-    if (!res) std::cerr << "World::drawCells: SDL_RenderTexture failed - " << SDL_GetError() << std::endl;
+    SDL_RenderTexture(renderer, texture, nullptr, nullptr);
 }
 
 unsigned long long World::getClock() const {
