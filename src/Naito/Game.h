@@ -20,7 +20,6 @@ public:
 
 private:
     Game();
-    ~Game();
 
     static Game* instance;
     World world;

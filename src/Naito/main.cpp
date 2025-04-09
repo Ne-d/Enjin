@@ -6,7 +6,6 @@
 #include <thread>
 #include <chrono>
 
-#include "Game.h"
 #include "SDL.h"
 #include "SDL_main.h"
 #include "SDL_video.h"
@@ -15,17 +14,15 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
+#include "Game.h"
+#include "Render.h"
 #include "World.h"
 
 using namespace Naito;
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-static SDL_Window* window;
-static SDL_Renderer* renderer;
-static SDL_Texture* texture;
-
-static SDL_Surface* surface;
+SDL_Texture* texture;
 
 time_point<steady_clock> start;
 time_point<steady_clock> now;
@@ -72,11 +69,11 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     world = Game::get()->getWorld();
 
-    /*for (int y = 50; y < 100; ++y) {
+    for (int y = 50; y < 100; ++y) {
         for (int x = 50; x < 100; ++x) {
-            world->getCellGrid().setCell(x, y, Cell{Element::Water});
+            world->getCellGrid().setCell(x, y, Cell{Element::Water, world->getCellGrid().getClock()});
         }
-    }*/
+    }
 
     start = steady_clock::now();
 
@@ -103,12 +100,13 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
     return SDL_APP_CONTINUE;
 }
 
-
 SDL_AppResult SDL_AppIterate(void* appstate) {
     // Start the Dear ImGui frame
     ImGui_ImplSDL3_NewFrame();
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui::NewFrame();
+
+    SDL_RenderClear(renderer);
 
     prev = now;
 
@@ -118,8 +116,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         world->getCellGrid().setCell(10, 10, Cell{Element::Sand, world->getCellGrid().getClock()});
 
     // Update world
-    //world->getCellGrid().update();
-    world->drawCells(surface, texture, renderer);
+    world->drawCells();
     world->getCellGrid().drawGui();
 
     ImGui::Render();

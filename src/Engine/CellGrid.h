@@ -1,6 +1,7 @@
 #ifndef CELLGRID_H
 #define CELLGRID_H
 
+#include <mutex>
 #include <vector>
 
 #include "Cell.h"
@@ -11,7 +12,6 @@ namespace Naito {
 class CellGrid {
 public:
     CellGrid(size_t width, size_t height);
-    ~CellGrid();
 
     [[nodiscard]] Cell getCell(Uint16 x, Uint16 y) const;
     void setCell(Uint16 x, Uint16 y, Cell cell);
@@ -22,6 +22,7 @@ public:
     void updateWater(Uint16 x, Uint16 y);
 
     [[nodiscard]] bool getClock() const;
+    [[nodiscard]] std::mutex& getMutex();
 
     void copyToFrontbuffer();
 
@@ -35,6 +36,8 @@ private:
 
     std::vector<Cell> backbuffer;
     std::vector<Cell> frontbuffer;
+
+    std::mutex mutex;
 
     Uint16 height;
     Uint16 width;

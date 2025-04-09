@@ -12,6 +12,7 @@
 
 namespace Naito {
 CellGrid::CellGrid(const size_t width, const size_t height) :
+    generation(0),
     clock(false),
     backbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
     frontbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
@@ -75,10 +76,13 @@ bool CellGrid::getClock() const {
     return clock;
 }
 
+std::mutex& CellGrid::getMutex() {
+    return mutex;
+}
+
 void CellGrid::copyToFrontbuffer() {
-    // TODO: Lock mutex
+    std::lock_guard lock(getMutex());
     frontbuffer = std::vector(backbuffer);
-    // TODO: Unlock mutex
 }
 
 bool CellGrid::drawGui() const {

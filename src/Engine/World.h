@@ -1,6 +1,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <memory>
+
 #include "SDL_render.h"
 #include "SDL_surface.h"
 
@@ -14,11 +16,10 @@ class World {
 public:
     // Methods
     World(size_t width, size_t height);
-    ~World();
 
     void update();
 
-    void drawCells(SDL_Surface* surface, SDL_Texture* texture, SDL_Renderer* renderer) const;
+    void drawCells();
 
     [[nodiscard]] unsigned long long getClock() const;
     [[nodiscard]] CellGrid& getCellGrid();
@@ -30,6 +31,9 @@ private:
 
     const uint16_t width;
     const uint16_t height;
+
+    SDL_Surface* surface;
+    SDL_Texture* texture;
 };
 
 } // Naito

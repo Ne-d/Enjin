@@ -50,6 +50,7 @@ set(NAITO_SOURCE
         ${SOURCE_ROOT}/Naito/Elements.cpp
         ${SOURCE_ROOT}/Naito/Game.cpp
         ${SOURCE_ROOT}/Naito/Game.h
+        ${SOURCE_ROOT}/Engine/Render.h
 )
 
 add_executable(Naito
