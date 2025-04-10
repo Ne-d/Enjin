@@ -8,7 +8,6 @@
 
 
 namespace Naito {
-
 class CellGrid {
 public:
     CellGrid(size_t width, size_t height);
@@ -18,6 +17,7 @@ public:
     void swapCells(Uint16 x, Uint16 y, Uint16 dx, Uint16 dy);
 
     void update();
+    void updateLoop();
     void updateSand(Uint16 x, Uint16 y);
     void updateWater(Uint16 x, Uint16 y);
 
@@ -50,9 +50,5 @@ private:
     std::chrono::high_resolution_clock::duration actualTickDuration;
 };
 
-
-int cellGridUpdateLoop(CellGrid* cellGrid);
-
 }
-
 #endif //CELLGRID_H

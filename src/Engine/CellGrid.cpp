@@ -2,6 +2,7 @@
 
 #include <array>
 #include <imgui.h>
+#include <thread>
 
 #include "Game.h"
 #include "World.h"
@@ -19,7 +20,7 @@ CellGrid::CellGrid(const size_t width, const size_t height) :
     height(height),
     width(width),
     desiredTickrate(60),
-    tickInterval(16),
+    tickInterval(std::chrono::round<std::chrono::nanoseconds>(std::chrono::duration<float>(1.0f / desiredTickrate))),
     actualTickrate(0),
     actualTickDuration(0) {
     backbuffer.assign(width * height, Cell{Element::Empty, DONT_UPDATE});
@@ -102,24 +103,34 @@ bool CellGrid::drawGui() {
 
     ImGui::Begin("Cell Grid");
 
-    ImGui::Value("Tickrate: ", actualTickrate);
-    ImGui::Value("Tick duration: ", static_cast<float>(
-                     static_cast<double>(duration_cast<nanoseconds>(actualTickDuration).count()) / 1'000'000.0));
+    if (ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGui::SeparatorText("Desired speed");
+        bool desiredTickrateChanged = ImGui::InputFloat("Desired Tickrate", &desiredTickrate, 1, 0);
+        if (desiredTickrateChanged) {
+            tickInterval = round<nanoseconds>(duration<float>(1.0f / desiredTickrate));
+        }
 
-    bool desiredTickrateChanged = ImGui::DragFloat("Desired Tickrate", &desiredTickrate, 1, 0, 1000);
-    if (desiredTickrateChanged)
-        tickInterval = round<nanoseconds>(duration<float>(1'000'000'000.0f / desiredTickrate)); // TODO: Test this
+        ImGui::Value("Desired tick interval",
+                     static_cast<float>(duration_cast<nanoseconds>(tickInterval).count()) / 1'000'000.0f);
 
-#ifndef NDEBUG
-    const auto elementCounts = countCells(); // Pretty expensive
-
-    for (unsigned int i = 0; i < static_cast<int>(Element::Count); ++i) {
-        std::string name = elementName(static_cast<Element>(i));
-        ImGui::Value(name.c_str(), elementCounts.at(i));
+        ImGui::SeparatorText("Measured speed");
+        ImGui::Value("Tickrate", actualTickrate);
+        ImGui::Value("Tick duration", static_cast<float>(
+                         static_cast<double>(duration_cast<nanoseconds>(actualTickDuration).count()) / 1'000'000.0));
     }
+
+    if (ImGui::CollapsingHeader("Element cell count")) {
+#ifndef NDEBUG
+        const auto elementCounts = countCells(); // Pretty expensive
+
+        for (unsigned int i = 0; i < static_cast<int>(Element::Count); ++i) {
+            std::string name = elementName(static_cast<Element>(i));
+            ImGui::Value(name.c_str(), elementCounts.at(i));
+        }
 #else
-    ImGui::Text("Element cell count disabled for performance");
+            ImGui::Text("Element cell count disabled for performance");
 #endif
+    }
 
     ImGui::End();
 
@@ -140,12 +151,11 @@ std::array<unsigned int, static_cast<int>(Element::Count)> CellGrid::countCells(
     return counts;
 }
 
-int cellGridUpdateLoop(CellGrid* cellGrid) {
+void CellGrid::updateLoop() {
     while (Game::get()->isRunning()) {
-        cellGrid->update();
-        SDL_Delay(16);
+        update();
+        std::this_thread::sleep_until(lastUpdate + tickInterval);
     }
-
-    return 0;
 }
+
 }

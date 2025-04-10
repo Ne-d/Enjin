@@ -77,7 +77,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 
     start = steady_clock::now();
 
-    simulationThread = std::thread(cellGridUpdateLoop, &world->getCellGrid());
+    simulationThread = std::thread(CellGrid::updateLoop, &world->getCellGrid());
 
     return SDL_APP_CONTINUE;
 }
