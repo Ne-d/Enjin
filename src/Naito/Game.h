@@ -6,8 +6,8 @@
 
 namespace Naito {
 
-static constexpr unsigned int SCREEN_WIDTH = 256;
-static constexpr unsigned int SCREEN_HEIGHT = 192;
+static constexpr unsigned int SIMULATION_WIDTH = 256;
+static constexpr unsigned int SIMULATION_HEIGHT = 192;
 
 
 class Game {

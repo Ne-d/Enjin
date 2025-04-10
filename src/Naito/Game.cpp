@@ -5,7 +5,7 @@ namespace Naito {
 
 Game* Game::instance = nullptr;
 
-Game::Game(): world(World(SCREEN_WIDTH, SCREEN_HEIGHT)), running(true) {}
+Game::Game(): world(World(SIMULATION_WIDTH, SIMULATION_HEIGHT)), running(true) {}
 
 Game* Game::get() {
     if (instance == nullptr)
