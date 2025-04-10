@@ -23,12 +23,11 @@ void World::update() {
 }
 
 
-void World::drawCells() {
+void World::drawCells(SDL_Window* window) {
     // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
     std::lock_guard guard(getCellGrid().getMutex());
 
     SDL_LockTextureToSurface(texture, nullptr, &surface);
-
 
     // As unclean as that is, it seems to be the way to go with SDL
     auto* pixels = static_cast<Uint32*>(surface->pixels);

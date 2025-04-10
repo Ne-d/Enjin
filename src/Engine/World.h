@@ -19,7 +19,7 @@ public:
 
     void update();
 
-    void drawCells();
+    void drawCells(SDL_Window* window);
 
     [[nodiscard]] unsigned long long getClock() const;
     [[nodiscard]] CellGrid& getCellGrid();

@@ -6,6 +6,7 @@
 
 #include "SDL.h"
 #include "SDL_video.h"
+#include "SDL_render.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
@@ -44,9 +45,11 @@ int main() {
         return SDL_APP_FAILURE;
     }
 
-    SDL_SetWindowAspectRatio(window,
+    /*SDL_SetWindowAspectRatio(window,
                              static_cast<float>(SIMULATION_WIDTH) / static_cast<float>(SIMULATION_HEIGHT),
-                             static_cast<float>(SIMULATION_WIDTH) / static_cast<float>(SIMULATION_HEIGHT));
+                             static_cast<float>(SIMULATION_WIDTH) / static_cast<float>(SIMULATION_HEIGHT));*/
+
+    SDL_SetRenderLogicalPresentation(renderer, SIMULATION_WIDTH, SIMULATION_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -112,7 +115,7 @@ int main() {
             world->getCellGrid().setCell(10, 10, Cell{Element::Sand, world->getCellGrid().getClock()});
 
         // Update world
-        world->drawCells();
+        world->drawCells(window);
 
         world->getCellGrid().drawGui();
         ImGui::Render();

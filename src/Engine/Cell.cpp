@@ -45,7 +45,7 @@ SDL_Color cellColor(const Cell cell) {
         return SDL_Color{22, 68, 127};
 
     default:
-        return SDL_Color{0, 0, 0};
+        return SDL_Color{255, 255, 255};
     }
 }
 } // Naito
