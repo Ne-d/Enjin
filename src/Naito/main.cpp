@@ -78,7 +78,7 @@ int main() {
 
     start = steady_clock::now();
 
-    simulationThread = std::thread(CellGrid::updateLoop, &world->getCellGrid());
+    simulationThread = std::thread(&CellGrid::updateLoop, &world->getCellGrid());
 
     // =================== Main Loop ===================
 
