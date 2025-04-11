@@ -24,6 +24,24 @@ void World::update() {
 
 
 void World::drawCells(SDL_Window* window) {
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    float windowAspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+
+    float worldAspectRatio = static_cast<float>(width) / static_cast<float>(height);
+
+    SDL_FRect rect;
+    if ( /*static_cast<float>(windowHeight) / windowAspectRatio < static_cast<float>(windowWidth)*/
+        windowAspectRatio > worldAspectRatio)
+        rect = {0, 0, static_cast<float>(windowHeight) * worldAspectRatio, static_cast<float>(windowHeight)};
+
+    else if ( /*(static_cast<float>(windowWidth) * windowAspectRatio) < static_cast<float>(windowHeight)*/
+        windowAspectRatio < worldAspectRatio)
+        rect = {0, 0, static_cast<float>(windowWidth), static_cast<float>(windowWidth) / worldAspectRatio};
+
+    else
+        rect = {0, 0, static_cast<float>(windowWidth), static_cast<float>(windowHeight)};
+
     // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
     std::lock_guard guard(getCellGrid().getMutex());
 
@@ -42,7 +60,7 @@ void World::drawCells(SDL_Window* window) {
     }
 
     SDL_UnlockTexture(texture);
-    SDL_RenderTexture(renderer, texture, nullptr, nullptr);
+    SDL_RenderTexture(renderer, texture, nullptr, &rect);
 }
 
 unsigned long long World::getClock() const {

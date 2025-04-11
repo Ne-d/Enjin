@@ -45,12 +45,6 @@ int main() {
         return SDL_APP_FAILURE;
     }
 
-    /*SDL_SetWindowAspectRatio(window,
-                             static_cast<float>(SIMULATION_WIDTH) / static_cast<float>(SIMULATION_HEIGHT),
-                             static_cast<float>(SIMULATION_WIDTH) / static_cast<float>(SIMULATION_HEIGHT));*/
-
-    SDL_SetRenderLogicalPresentation(renderer, SIMULATION_WIDTH, SIMULATION_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
