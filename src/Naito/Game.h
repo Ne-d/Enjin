@@ -16,6 +16,8 @@ public:
     [[nodiscard]] World* getWorld();
     [[nodiscard]] bool isRunning() const;
 
+    void drawGui();
+
     void quit();
 
 private:

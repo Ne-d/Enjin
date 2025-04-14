@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include <imgui.h>
+
 
 namespace Naito {
 
@@ -20,6 +22,12 @@ World* Game::getWorld() {
 
 bool Game::isRunning() const {
     return running;
+}
+
+void Game::drawGui() {
+    ImGui::Begin("Game");
+    world.getCellGrid().drawGui();
+    ImGui::End();
 }
 
 void Game::quit() {

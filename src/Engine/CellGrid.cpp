@@ -19,7 +19,7 @@ CellGrid::CellGrid(const size_t width, const size_t height) :
     frontbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
     height(height),
     width(width),
-    desiredTickrate(0.00000001),
+    desiredTickrate(60),
     tickInterval(std::chrono::round<std::chrono::nanoseconds>(std::chrono::duration<float>(1.0f / desiredTickrate))),
     actualTickrate(0),
     actualTickDuration(0) {
@@ -83,6 +83,7 @@ void CellGrid::update() {
     actualTickrate = 1'000'000'000.0f / static_cast<float>(duration_cast<nanoseconds>(actualTickDuration).count());
 
     lastUpdate = start;
+    activeTickDuration = high_resolution_clock::now() - start;
 }
 
 bool CellGrid::getClock() const {
@@ -101,8 +102,6 @@ void CellGrid::copyToFrontbuffer() {
 bool CellGrid::drawGui() {
     using namespace std::chrono;
 
-    ImGui::Begin("Cell Grid");
-
     if (ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::SeparatorText("Desired speed");
         bool desiredTickrateChanged = ImGui::InputFloat("Desired Tickrate", &desiredTickrate, 1, 0);
@@ -117,6 +116,12 @@ bool CellGrid::drawGui() {
         ImGui::Value("Tickrate", actualTickrate);
         ImGui::Value("Tick duration", static_cast<float>(
                          static_cast<double>(duration_cast<nanoseconds>(actualTickDuration).count()) / 1'000'000.0));
+
+        ImGui::Value("Active Tick Duration", duration_cast<nanoseconds>(activeTickDuration).count() / 1'000'000.0f);
+
+        ImGui::Value("Tick budget used",
+                     static_cast<float>(duration_cast<nanoseconds>(activeTickDuration).count()) /
+                     static_cast<float>(duration_cast<nanoseconds>(tickInterval).count()));
     }
 
     if (ImGui::CollapsingHeader("Element cell count")) {
@@ -131,8 +136,6 @@ bool CellGrid::drawGui() {
             ImGui::Text("Element cell count disabled for performance");
 #endif
     }
-
-    ImGui::End();
 
     return true;
 }

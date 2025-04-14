@@ -109,9 +109,9 @@ int main() {
             world->getCellGrid().setCell(10, 10, Cell{Element::Sand, world->getCellGrid().getClock()});
 
         // Update world
-        world->drawCells(window);
+        world->drawCells();
 
-        world->getCellGrid().drawGui();
+        Game::get()->drawGui();
         ImGui::Render();
         ImGui::UpdatePlatformWindows();
 

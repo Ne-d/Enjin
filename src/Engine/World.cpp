@@ -23,24 +23,31 @@ void World::update() {
 }
 
 
-void World::drawCells(SDL_Window* window) {
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-    float windowAspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+void World::drawCells() {
+    int windowWidthInt, windowHeightInt;
+    SDL_GetWindowSize(window, &windowWidthInt, &windowHeightInt);
 
-    float worldAspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    const float windowWidth = static_cast<float>(windowWidthInt);
+    const float windowHeight(static_cast<float>(windowHeightInt));
+    const float windowAspectRatio = windowWidth / windowHeight;
+
+    const float worldAspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
     SDL_FRect rect;
-    if ( /*static_cast<float>(windowHeight) / windowAspectRatio < static_cast<float>(windowWidth)*/
-        windowAspectRatio > worldAspectRatio)
-        rect = {0, 0, static_cast<float>(windowHeight) * worldAspectRatio, static_cast<float>(windowHeight)};
-
-    else if ( /*(static_cast<float>(windowWidth) * windowAspectRatio) < static_cast<float>(windowHeight)*/
-        windowAspectRatio < worldAspectRatio)
-        rect = {0, 0, static_cast<float>(windowWidth), static_cast<float>(windowWidth) / worldAspectRatio};
-
+    if (windowAspectRatio > worldAspectRatio) {
+        const float scaledWidth = windowHeight * worldAspectRatio;
+        const float scaledHeight = windowHeight;
+        const float xOffset = (windowWidth - scaledWidth) / 2.0f;
+        rect = {xOffset, 0, scaledWidth, scaledHeight};
+    }
+    else if (windowAspectRatio < worldAspectRatio) {
+        const float scaledWidth = windowWidth;
+        const float scaledHeight = windowWidth / worldAspectRatio;
+        const float yOffset = (windowHeight - scaledHeight) / 2.0f;
+        rect = {0, yOffset, scaledWidth, scaledHeight};
+    }
     else
-        rect = {0, 0, static_cast<float>(windowWidth), static_cast<float>(windowHeight)};
+        rect = {0, 0, windowWidth, windowHeight};
 
     // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
     std::lock_guard guard(getCellGrid().getMutex());

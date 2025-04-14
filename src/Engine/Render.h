@@ -4,7 +4,12 @@
 #include <SDL_render.h>
 #include <SDL_video.h>
 
+
+namespace Naito {
+
 inline SDL_Window* window;
 inline SDL_Renderer* renderer;
+
+}
 
 #endif //RENDER_H

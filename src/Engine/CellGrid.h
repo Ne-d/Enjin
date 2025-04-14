@@ -48,6 +48,7 @@ private:
 
     float actualTickrate;
     std::chrono::high_resolution_clock::duration actualTickDuration;
+    std::chrono::high_resolution_clock::duration activeTickDuration;
 };
 
 }
