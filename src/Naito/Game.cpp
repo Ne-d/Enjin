@@ -26,7 +26,14 @@ bool Game::isRunning() const {
 
 void Game::drawGui() {
     ImGui::Begin("Game");
-    world.getCellGrid().drawGui();
+
+    ImGui::BeginTabBar("Main Tabs");
+    if (ImGui::BeginTabItem("CellGrid")) {
+        world.getCellGrid().drawGui();
+        ImGui::EndTabItem();
+    }
+    ImGui::EndTabBar();
+
     ImGui::End();
 }
 
