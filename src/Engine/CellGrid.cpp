@@ -3,6 +3,8 @@
 #include <array>
 #include <imgui.h>
 #include <thread>
+#include <cmath>
+#include <iostream>
 
 #include "Game.h"
 #include "World.h"
@@ -56,6 +58,16 @@ void CellGrid::update() {
 
     if (getCell(10, 10).isEmpty())
         setCell(10, 10, Cell{Element::Sand, UPDATE});
+
+    SDL_MouseButtonFlags mouseButtonFlags;
+    float mouseX, mouseY;
+    mouseButtonFlags = SDL_GetMouseState(&mouseX, &mouseY);
+
+    if (mouseButtonFlags & SDL_BUTTON_LEFT) {
+        float x, y;
+        Game::get()->getWorld()->windowToWorldCoordinates(mouseX, mouseY, &x, &y);
+        setCell(std::floor(x), std::floor(y), Cell{Game::get()->getSelectedElement(), UPDATE});
+    }
 
     for (unsigned int y = height - 1; y > 0; --y) {
         for (unsigned int x = 0; x < width; ++x) {

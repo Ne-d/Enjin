@@ -6,8 +6,8 @@
 
 namespace Naito {
 
-static constexpr unsigned int SIMULATION_WIDTH = 256;
-static constexpr unsigned int SIMULATION_HEIGHT = 192;
+constexpr unsigned int WORLD_WIDTH = 256;
+constexpr unsigned int WORLD_HEIGHT = 192;
 
 
 class Game {
@@ -15,6 +15,8 @@ public:
     static Game* get();
     [[nodiscard]] World* getWorld();
     [[nodiscard]] bool isRunning() const;
+
+    [[nodiscard]] Element getSelectedElement() const;
 
     void drawGui();
 
@@ -25,6 +27,8 @@ private:
 
     static Game* instance;
     World world;
+
+    int selectedElement;
 
     bool running;
 };

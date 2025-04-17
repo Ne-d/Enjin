@@ -23,7 +23,7 @@ bool Cell::isLiquid() const {
     return element == Element::Water;
 }
 
-std::string elementName(const Element element) {
+const char* elementName(const Element element) {
     switch (element) {
     case Element::Empty: return "Empty";
     case Element::Wall: return "Wall";
@@ -32,7 +32,6 @@ std::string elementName(const Element element) {
     case Element::Water: return "Water";
     case Element::Lava: return "Lava";
     case Element::Fire: return "Fire";
-    case Element::Count: return "Count";
     default: return "unknown";
     }
 }

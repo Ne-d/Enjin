@@ -23,6 +23,7 @@ public:
 
     [[nodiscard]] unsigned long long getClock() const;
     [[nodiscard]] CellGrid& getCellGrid();
+    void windowToWorldCoordinates(float windowX, float windowY, float* worldX, float* worldY);
 
 private:
     CellGrid grid;
@@ -34,6 +35,8 @@ private:
 
     SDL_Surface* surface;
     SDL_Texture* texture;
+
+    SDL_FRect displayRect;
 };
 
 } // Naito

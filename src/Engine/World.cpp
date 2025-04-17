@@ -33,21 +33,20 @@ void World::drawCells() {
 
     const float worldAspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
-    SDL_FRect rect;
     if (windowAspectRatio > worldAspectRatio) {
         const float scaledWidth = windowHeight * worldAspectRatio;
         const float scaledHeight = windowHeight;
         const float xOffset = (windowWidth - scaledWidth) / 2.0f;
-        rect = {xOffset, 0, scaledWidth, scaledHeight};
+        displayRect = {xOffset, 0, scaledWidth, scaledHeight};
     }
     else if (windowAspectRatio < worldAspectRatio) {
         const float scaledWidth = windowWidth;
         const float scaledHeight = windowWidth / worldAspectRatio;
         const float yOffset = (windowHeight - scaledHeight) / 2.0f;
-        rect = {0, yOffset, scaledWidth, scaledHeight};
+        displayRect = {0, yOffset, scaledWidth, scaledHeight};
     }
     else
-        rect = {0, 0, windowWidth, windowHeight};
+        displayRect = {0, 0, windowWidth, windowHeight};
 
     // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
     std::lock_guard guard(getCellGrid().getMutex());
@@ -67,7 +66,7 @@ void World::drawCells() {
     }
 
     SDL_UnlockTexture(texture);
-    SDL_RenderTexture(renderer, texture, nullptr, &rect);
+    SDL_RenderTexture(renderer, texture, nullptr, &displayRect);
 }
 
 unsigned long long World::getClock() const {
@@ -76,6 +75,13 @@ unsigned long long World::getClock() const {
 
 CellGrid& World::getCellGrid() {
     return grid;
+}
+
+void World::windowToWorldCoordinates(float windowX, float windowY, float* worldX, float* worldY) {
+    float horizontalScale = width / displayRect.w;
+    float verticalScale = height / displayRect.h;
+    *worldX = windowX * horizontalScale - displayRect.x * horizontalScale;
+    *worldY = windowY * verticalScale - displayRect.y * verticalScale;
 }
 
 } // Naito

@@ -42,7 +42,7 @@ public:
 };
 
 
-std::string elementName(Element element);
+const char* elementName(Element element);
 SDL_Color cellColor(Cell cell);
 
 } // Naito
