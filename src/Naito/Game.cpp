@@ -8,9 +8,11 @@ namespace Naito {
 Game* Game::instance = nullptr;
 
 Game::Game() :
-    world(World(WORLD_WIDTH, WORLD_HEIGHT)),
+    world(World(WORLD_WIDTH, WORLD_HEIGHT)), brushSize(3),
     selectedElement(0),
     running(true) {}
+
+int Game::getBrushSize() const { return brushSize; }
 
 Game* Game::get() {
     if (instance == nullptr)
@@ -35,7 +37,9 @@ void Game::drawGui() {
     ImGui::Begin("Game");
 
     ImGui::BeginTabBar("Main Tabs");
-    if (ImGui::BeginTabItem("Elements")) {
+    if (ImGui::BeginTabItem("Placement")) {
+        ImGui::InputInt("Brush size", &brushSize);
+
         const char* elementNames[static_cast<Uint8>(Element::Count)];
 
         for (Uint8 i = 0; i < static_cast<Uint8>(Element::Count); ++i) {

@@ -38,13 +38,17 @@ const char* elementName(const Element element) {
 
 SDL_Color cellColor(const Cell cell) {
     switch (cell.element) {
+    case Element::Empty:
+        return SDL_Color{0, 0, 0};
+    case Element::Wall:
+        return SDL_Color{150, 150, 150};
     case Element::Sand:
         return SDL_Color{247, 233, 155};
     case Element::Water:
         return SDL_Color{22, 68, 127};
 
     default:
-        return SDL_Color{0, 0, 0};
+        return SDL_Color{255, 255, 0};
     }
 }
 } // Naito

@@ -59,14 +59,21 @@ void CellGrid::update() {
     if (getCell(10, 10).isEmpty())
         setCell(10, 10, Cell{Element::Sand, UPDATE});
 
+    // Paint Cells
     SDL_MouseButtonFlags mouseButtonFlags;
     float mouseX, mouseY;
     mouseButtonFlags = SDL_GetMouseState(&mouseX, &mouseY);
 
-    if (mouseButtonFlags & SDL_BUTTON_LEFT) {
-        float x, y;
-        Game::get()->getWorld()->windowToWorldCoordinates(mouseX, mouseY, &x, &y);
-        setCell(std::floor(x), std::floor(y), Cell{Game::get()->getSelectedElement(), UPDATE});
+    if (mouseButtonFlags & SDL_BUTTON_LEFT && !ImGui::GetIO().WantCaptureMouse) {
+        float floatX, floatY;
+        Game::get()->getWorld()->windowToWorldCoordinates(mouseX, mouseY, &floatX, &floatY);
+        const int x = std::floor(floatX);
+        const int y = std::floor(floatY);
+        const int brushSize = Game::get()->getBrushSize();
+
+        for (int i = x - brushSize / 2; i < x + brushSize; i++)
+            for (int j = y - brushSize / 2; j < y + brushSize; j++)
+                setCell(std::floor(i), std::floor(j), Cell{Game::get()->getSelectedElement(), UPDATE});
     }
 
     for (unsigned int y = height - 1; y > 0; --y) {
@@ -145,7 +152,7 @@ bool CellGrid::drawGui() {
             ImGui::Value(name.c_str(), elementCounts.at(i));
         }
 #else
-            ImGui::Text("Element cell count disabled for performance");
+        ImGui::Text("Element cell count disabled for performance");
 #endif
     }
 

@@ -17,6 +17,7 @@ public:
     [[nodiscard]] bool isRunning() const;
 
     [[nodiscard]] Element getSelectedElement() const;
+    [[nodiscard]] int getBrushSize() const;
 
     void drawGui();
 
@@ -28,6 +29,7 @@ private:
     static Game* instance;
     World world;
 
+    int brushSize;
     int selectedElement;
 
     bool running;
