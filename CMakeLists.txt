@@ -53,6 +53,8 @@ set(NAITO_SOURCE
         ${SOURCE_ROOT}/Engine/Render.h
         ${SOURCE_ROOT}/Engine/Entity.cpp
         ${SOURCE_ROOT}/Engine/Entity.h
+        ${SOURCE_ROOT}/Naito/Player.cpp
+        ${SOURCE_ROOT}/Naito/Player.h
 )
 
 add_executable(Naito
