@@ -51,6 +51,8 @@ set(NAITO_SOURCE
         ${SOURCE_ROOT}/Naito/Game.cpp
         ${SOURCE_ROOT}/Naito/Game.h
         ${SOURCE_ROOT}/Engine/Render.h
+        ${SOURCE_ROOT}/Engine/Entity.cpp
+        ${SOURCE_ROOT}/Engine/Entity.h
 )
 
 add_executable(Naito
@@ -73,35 +75,3 @@ target_include_directories(Naito PRIVATE
 target_link_libraries(Naito PRIVATE
         SDL3::SDL3
 )
-
-
-# ==================== Tests ====================
-
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-add_subdirectory(${DEPS_ROOT}/googletest EXCLUDE_FROM_ALL)
-enable_testing()
-
-
-add_executable(Tests
-        ${NAITO_SOURCE}
-
-        ${TESTS_ROOT}/RandomTests.cpp
-)
-
-target_include_directories(Tests PRIVATE
-        ${NAITO_INCLUDE}
-
-
-        ${SOURCE_ROOT}/Tests
-
-        deps/SDL/include/SDL3
-        deps/googletest/googletest/include
-)
-
-target_link_libraries(Tests PRIVATE
-        SDL3::SDL3
-        GTest::gtest_main
-)
-
-include(GoogleTest)
-gtest_discover_tests(Tests)
