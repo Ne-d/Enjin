@@ -10,3 +10,7 @@ Entity::Entity(const float x, const float y) :
     rx(x - static_cast<float>(cx)),
     ry(y - static_cast<float>(cy)),
     dx(0), dy(0) {}
+
+void Entity::update() {}
+
+void Entity::draw() {}

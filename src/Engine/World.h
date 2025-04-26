@@ -8,6 +8,7 @@
 
 #include "Cell.h"
 #include "CellGrid.h"
+#include "Entity.h"
 
 
 namespace Naito {
@@ -19,14 +20,21 @@ public:
 
     void update();
 
+    void draw();
     void drawCells();
 
     [[nodiscard]] unsigned long long getClock() const;
     [[nodiscard]] CellGrid& getCellGrid();
-    void windowToWorldCoordinates(float windowX, float windowY, float* worldX, float* worldY);
+    void windowToWorldCoordinates(float windowX, float windowY, float* worldX, float* worldY) const;
+    void worldToWindowCoordinates(float worldX, float worldY, float* windowX, float* windowY) const;
+
+    [[nodiscard]] float getHorizontalScale() const;
+    [[nodiscard]] float getVerticalScale() const;
+    [[nodiscard]] float getCellSize() const;
 
 private:
     CellGrid grid;
+    std::vector<Entity*> entities;
 
     unsigned long long clock;
 

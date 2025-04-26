@@ -9,11 +9,11 @@ public:
     Entity(float x, float y);
     virtual ~Entity() = default;
 
-    virtual void update() = 0;
+    virtual void update();
     virtual void move(float x, float y) = delete;
-    virtual void draw() = delete;
+    virtual void draw();
 
-private:
+protected:
     int cx, cy; // Cell position
     float rx, ry; // Position in cell
     float dx, dy; // Velocity

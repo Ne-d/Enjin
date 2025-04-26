@@ -1,7 +1,10 @@
 #include "Player.h"
 
-#include <iostream>
 #include <SDL_keyboard.h>
+#include <SDL_render.h>
+
+#include "Game.h"
+#include "Render.h"
 
 using namespace Naito;
 
@@ -19,6 +22,19 @@ void Player::update() {
 
     xInput = rightInput - leftInput;
     yInput = upInput - downInput;
+}
 
-    std::cout << "Player::update: xInput : " << xInput << ", yInput : " << yInput << std::endl;
+void Player::draw() {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    const float x = static_cast<float>(cx) + rx;
+    const float y = static_cast<float>(cy) + ry;
+
+    float windowX, windowY;
+    World* world = Game::get()->getWorld();
+    world->worldToWindowCoordinates(x, y, &windowX, &windowY);
+
+    const SDL_FRect rect = SDL_FRect{windowX, windowY, world->getCellSize(), world->getCellSize()};
+    SDL_RenderRect(renderer, &rect);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }

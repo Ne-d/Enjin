@@ -11,6 +11,7 @@ public:
     Player(float x, float y);
 
     void update() override;
+    void draw() override;
 
 private:
     float xInput;

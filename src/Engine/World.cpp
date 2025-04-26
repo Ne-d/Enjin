@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "Player.h"
 #include "Render.h"
 
 
@@ -16,10 +17,21 @@ World::World(const size_t width, const size_t height)
       texture(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING,
                                 static_cast<int>(width), static_cast<int>(height))) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+
+    entities.emplace_back(new Player(10, 10));
 }
 
 void World::update() {
-    grid.update();
+    for (Entity* e : entities)
+        e->update();
+}
+
+void World::draw() {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    drawCells();
+
+    for (Entity* e : entities)
+        e->draw();
 }
 
 
@@ -77,11 +89,26 @@ CellGrid& World::getCellGrid() {
     return grid;
 }
 
-void World::windowToWorldCoordinates(float windowX, float windowY, float* worldX, float* worldY) {
-    float horizontalScale = width / displayRect.w;
-    float verticalScale = height / displayRect.h;
-    *worldX = windowX * horizontalScale - displayRect.x * horizontalScale;
-    *worldY = windowY * verticalScale - displayRect.y * verticalScale;
+void World::windowToWorldCoordinates(const float windowX, const float windowY, float* worldX, float* worldY) const {
+    *worldX = windowX * getHorizontalScale() - displayRect.x * getHorizontalScale();
+    *worldY = windowY * getVerticalScale() - displayRect.y * getVerticalScale();
+}
+
+void World::worldToWindowCoordinates(const float worldX, const float worldY, float* windowX, float* windowY) const {
+    *windowX = worldX / getHorizontalScale() + displayRect.x;;
+    *windowY = worldY / getVerticalScale() + displayRect.y;
+}
+
+float World::getHorizontalScale() const {
+    return static_cast<float>(width) / displayRect.w;
+}
+
+float World::getVerticalScale() const {
+    return static_cast<float>(height) / displayRect.h;
+}
+
+float World::getCellSize() const {
+    return 1 / getHorizontalScale();
 }
 
 } // Naito
