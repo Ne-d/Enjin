@@ -10,13 +10,20 @@ public:
     virtual ~Entity() = default;
 
     virtual void update();
-    virtual void move(float x, float y) = delete;
+    virtual void updatePositionWithCollision();
     virtual void draw();
 
 protected:
     int cx, cy; // Cell position
     float rx, ry; // Position in cell
     float dx, dy; // Velocity
+
+    float width = 1;
+    float height = 1;
+
+    bool isOnGround = false;
+    bool isOnLeftWall = false;
+    bool isOnRightWall = false;
 };
 
 }

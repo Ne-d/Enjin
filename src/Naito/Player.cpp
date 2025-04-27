@@ -13,6 +13,8 @@ Player::Player(const float x, const float y) : Entity(x, y), xInput(0), yInput(0
 void Player::update() {
     Entity::update();
 
+    float frameTime = Game::get()->getFrameTime();
+
     // Get movement input
     const bool* keyboardState = SDL_GetKeyboardState(NULL);
     const float rightInput = keyboardState[SDL_SCANCODE_D] ? 1.0f : 0.0f;
@@ -23,8 +25,10 @@ void Player::update() {
     xInput = rightInput - leftInput;
     yInput = upInput - downInput;
 
-    rx += xInput;
-    ry -= yInput;
+    dx += xInput * moveSpeed * frameTime;
+    dy -= yInput * moveSpeed * frameTime;
+
+    updatePositionWithCollision();
 }
 
 void Player::draw() {

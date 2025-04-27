@@ -15,7 +15,7 @@ Game::Game() :
 
 int Game::getBrushSize() const { return brushSize; }
 
-void Game::setFrameTime(const double frameTime) {
+void Game::setFrameTime(const float frameTime) {
     this->frameTime = frameTime;
 }
 
@@ -46,10 +46,10 @@ void Game::drawGui() {
     ImGui::Begin("Game");
 
     ImGui::SeparatorText("Performance");
-    const float frameRate = 1.0f / static_cast<float>(frameTime);
+    const float frameRate = 1.0f / frameTime;
     ImGui::Value("Framerate", frameRate);
 
-    const float frameTimeMs = static_cast<float>(frameTime) * 1000.0f;
+    const float frameTimeMs = frameTime * 1000.0f;
     ImGui::Value("Frametime", frameTimeMs);
 
     ImGui::SeparatorText("Controls");

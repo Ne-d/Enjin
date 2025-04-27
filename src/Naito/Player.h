@@ -16,6 +16,8 @@ public:
 private:
     float xInput;
     float yInput;
+
+    float moveSpeed = 50.0f;
 };
 
 }

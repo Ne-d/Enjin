@@ -32,6 +32,8 @@ public:
     [[nodiscard]] float getVerticalScale() const;
     [[nodiscard]] float getCellSize() const;
 
+    [[nodiscard]] float hasCollision(Uint16 x, Uint16 y, Uint16 width, Uint16 height);
+
 private:
     CellGrid grid;
     std::vector<Entity*> entities;
