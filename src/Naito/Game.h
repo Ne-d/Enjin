@@ -20,7 +20,7 @@ public:
     [[nodiscard]] int getBrushSize() const;
 
     void setFrameTime(float frameTime);
-    [[nodiscard]] double getFrameTime() const;
+    [[nodiscard]] float getFrameTime() const;
 
     void drawGui();
 

@@ -14,12 +14,11 @@ class World;
 
 using namespace Naito;
 
-Entity::Entity(const float x, const float y) :
-    cx(std::floor(x)),
-    cy(std::floor(y)),
-    rx(x - static_cast<float>(cx)),
-    ry(y - static_cast<float>(cy)),
-    dx(0), dy(0) {}
+Entity::Entity(const float x, const float y, const float width, const float height) :
+    cx(std::floor(x)), cy(std::floor(y)),
+    rx(x - static_cast<float>(cx)), ry(y - static_cast<float>(cy)),
+    dx(0), dy(0),
+    width(width), height(height) {}
 
 void Entity::update() {}
 
@@ -107,7 +106,7 @@ void Entity::draw() {
     const World* world = Game::get()->getWorld();
     world->worldToWindowCoordinates(x, y, &windowX, &windowY);
 
-    const SDL_FRect rect = SDL_FRect{windowX, windowY, world->getCellSize(), world->getCellSize()};
+    const SDL_FRect rect = SDL_FRect{windowX, windowY, width * world->getCellSize(), height * world->getCellSize()};
     SDL_RenderFillRect(globalRenderer, &rect);
 
     SDL_SetRenderDrawColor(globalRenderer, 0, 0, 0, 255);

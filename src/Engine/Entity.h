@@ -6,7 +6,7 @@ namespace Naito {
 
 class Entity {
 public:
-    Entity(float x, float y);
+    Entity(float x, float y, float width = 1.0f, float height = 1.0f);
     virtual ~Entity() = default;
 
     virtual void update();

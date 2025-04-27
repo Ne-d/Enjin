@@ -4,11 +4,13 @@
 #include <SDL_render.h>
 
 #include "Game.h"
-#include "Render.h"
 
 using namespace Naito;
 
-Player::Player(const float x, const float y) : Entity(x, y), xInput(0), yInput(0) {}
+Player::Player(const float x, const float y) :
+    Entity(x, y, 3, 5),
+    xInput(0),
+    yInput(0) {}
 
 void Player::update() {
     Entity::update();

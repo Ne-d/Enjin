@@ -19,7 +19,7 @@ void Game::setFrameTime(const float frameTime) {
     this->frameTime = frameTime;
 }
 
-double Game::getFrameTime() const {
+float Game::getFrameTime() const {
     return frameTime;
 }
 
