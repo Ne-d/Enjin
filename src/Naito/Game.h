@@ -19,6 +19,9 @@ public:
     [[nodiscard]] Element getSelectedElement() const;
     [[nodiscard]] int getBrushSize() const;
 
+    void setFrameTime(double frameTime);
+    [[nodiscard]] double getFrameTime() const;
+
     void drawGui();
 
     void quit();
@@ -33,6 +36,7 @@ private:
     int selectedElement;
 
     bool running;
+    double frameTime;
 };
 }
 

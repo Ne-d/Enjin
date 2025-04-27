@@ -10,9 +10,18 @@ Game* Game::instance = nullptr;
 Game::Game() :
     world(World(WORLD_WIDTH, WORLD_HEIGHT)), brushSize(3),
     selectedElement(0),
-    running(true) {}
+    running(true),
+    frameTime(0) {}
 
 int Game::getBrushSize() const { return brushSize; }
+
+void Game::setFrameTime(const double frameTime) {
+    this->frameTime = frameTime;
+}
+
+double Game::getFrameTime() const {
+    return frameTime;
+}
 
 Game* Game::get() {
     if (instance == nullptr)
@@ -36,6 +45,14 @@ Element Game::getSelectedElement() const {
 void Game::drawGui() {
     ImGui::Begin("Game");
 
+    ImGui::SeparatorText("Performance");
+    const float frameRate = 1.0f / static_cast<float>(frameTime);
+    ImGui::Value("Framerate", frameRate);
+
+    const float frameTimeMs = static_cast<float>(frameTime) * 1000.0f;
+    ImGui::Value("Frametime", frameTimeMs);
+
+    ImGui::SeparatorText("Controls");
     ImGui::BeginTabBar("Main Tabs");
     if (ImGui::BeginTabItem("Placement")) {
         ImGui::InputInt("Brush size", &brushSize);

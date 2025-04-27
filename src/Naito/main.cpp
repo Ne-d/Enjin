@@ -40,7 +40,7 @@ int main() {
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("Naito", 1920, 1080, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Naito", 1920, 1080, SDL_WINDOW_RESIZABLE, &globalWindow, &globalRenderer)) {
         SDL_Log("Couldn't create window and renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
@@ -59,8 +59,8 @@ int main() {
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
-    ImGui_ImplSDLRenderer3_Init(renderer);
+    ImGui_ImplSDL3_InitForSDLRenderer(globalWindow, globalRenderer);
+    ImGui_ImplSDLRenderer3_Init(globalRenderer);
 
     world = Game::get()->getWorld();
 
@@ -77,6 +77,8 @@ int main() {
     // =================== Main Loop ===================
 
     while (!quit) {
+        std::chrono::time_point<high_resolution_clock> frameStart = high_resolution_clock::now();
+
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {
             ImGui_ImplSDL3_ProcessEvent(&event); // Forward your event to backend
@@ -99,7 +101,7 @@ int main() {
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui::NewFrame();
 
-        SDL_RenderClear(renderer);
+        SDL_RenderClear(globalRenderer);
 
         prev = now;
 
@@ -119,11 +121,14 @@ int main() {
         ImGui::UpdatePlatformWindows();
 
         // Update displayed frame
-        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), globalRenderer);
 
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(globalRenderer);
 
         frameCount++;
+        auto frameEnd = high_resolution_clock::now();
+        auto frameTime = frameEnd - frameStart;
+        Game::get()->setFrameTime(static_cast<double>(duration_cast<nanoseconds>(frameTime).count()) / 1'000'000'000);
     }
 
     now = steady_clock::now();

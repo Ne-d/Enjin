@@ -7,8 +7,8 @@
 
 namespace Naito {
 
-inline SDL_Window* window;
-inline SDL_Renderer* renderer;
+inline SDL_Window* globalWindow;
+inline SDL_Renderer* globalRenderer;
 
 }
 

@@ -14,7 +14,7 @@ World::World(const size_t width, const size_t height)
       width(width),
       height(height),
       surface(SDL_CreateSurface(static_cast<int>(width), static_cast<int>(height), SDL_PIXELFORMAT_RGBX8888)),
-      texture(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING,
+      texture(SDL_CreateTexture(globalRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING,
                                 static_cast<int>(width), static_cast<int>(height))) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
@@ -27,7 +27,7 @@ void World::update() {
 }
 
 void World::draw() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(globalRenderer, 0, 0, 0, 255);
     drawCells();
 
     for (Entity* e : entities)
@@ -37,7 +37,7 @@ void World::draw() {
 
 void World::drawCells() {
     int windowWidthInt, windowHeightInt;
-    SDL_GetWindowSize(window, &windowWidthInt, &windowHeightInt);
+    SDL_GetWindowSize(globalWindow, &windowWidthInt, &windowHeightInt);
 
     const float windowWidth = static_cast<float>(windowWidthInt);
     const float windowHeight(static_cast<float>(windowHeightInt));
@@ -78,7 +78,7 @@ void World::drawCells() {
     }
 
     SDL_UnlockTexture(texture);
-    SDL_RenderTexture(renderer, texture, nullptr, &displayRect);
+    SDL_RenderTexture(globalRenderer, texture, nullptr, &displayRect);
 }
 
 unsigned long long World::getClock() const {
