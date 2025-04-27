@@ -36,7 +36,8 @@ void Entity::updatePositionWithCollision() {
     isOnLeftWall = false;
     // X(-) Movement collisions
     do {
-        if (world->hasCollision(cx - 1, cy, width, height) && rx <= collisionThresholdX) {
+        if (world->hasCollision(cx - 1, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx <=
+            collisionThresholdX) {
             rx = collisionThresholdX;
             dx = 0.0f;
             isOnLeftWall = true;
@@ -51,7 +52,8 @@ void Entity::updatePositionWithCollision() {
     isOnRightWall = false;
     // X(+) Movement collisions
     do {
-        if (world->hasCollision(cx + 2, cy, width, height) && rx >= 1 - collisionThresholdX) {
+        if (world->hasCollision(cx + 2, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx >= 1 -
+            collisionThresholdX) {
             rx = 1 - collisionThresholdX;
             dx = 0.0f;
             isOnRightWall = true;
@@ -65,7 +67,8 @@ void Entity::updatePositionWithCollision() {
 
     // Y(-) Movement collisions
     do {
-        if (world->hasCollision(cx, cy - 1, width * 1, height + 1) && ry < 0.0f) {
+        if (world->hasCollision(cx, cy - 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height + 1)) && ry <
+            0.0f) {
             ry = 0.0f;
             dy = 0.0f;
         }
@@ -81,7 +84,8 @@ void Entity::updatePositionWithCollision() {
 
     // Y(+) Movement collisions
     do {
-        if (world->hasCollision(cx, cy + 1, width + 1, height) && ry >= 0.99f) {
+        if (world->hasCollision(cx, cy + 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height)) && ry >=
+            0.99f) {
             ry = 0.99f;
             dy = 0.0f;
             isOnGround = true;

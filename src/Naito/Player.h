@@ -17,7 +17,9 @@ private:
     float xInput;
     float yInput;
 
-    float moveSpeed = 50.0f;
+    float moveSpeed = 1000.0f;
+    float accelerationFactor = 0.15f;
+    float gravity = 50.0f;
 };
 
 }

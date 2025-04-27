@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include <cmath>
 #include <SDL_keyboard.h>
 #include <SDL_render.h>
 
@@ -15,7 +16,7 @@ Player::Player(const float x, const float y) :
 void Player::update() {
     Entity::update();
 
-    float frameTime = Game::get()->getFrameTime();
+    const float frameTime = Game::get()->getFrameTime();
 
     // Get movement input
     const bool* keyboardState = SDL_GetKeyboardState(NULL);
@@ -27,8 +28,16 @@ void Player::update() {
     xInput = rightInput - leftInput;
     yInput = upInput - downInput;
 
-    dx += xInput * moveSpeed * frameTime;
-    dy -= yInput * moveSpeed * frameTime;
+    // Only apply movement if target speed is faster than current speed
+    // Otherwise apply friction
+    const float targetSpeed = xInput * moveSpeed;
+    if (abs(targetSpeed) > abs(dx))
+        dx += xInput * accelerationFactor * moveSpeed * Game::get()->getFrameTime();
+    else
+        dx *= std::pow(frictionX, Game::get()->getFrameTime());
+
+    dy += gravity * Game::get()->getFrameTime();
+    dy *= std::pow(frictionY, Game::get()->getFrameTime());
 
     updatePositionWithCollision();
 }

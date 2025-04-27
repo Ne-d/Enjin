@@ -111,7 +111,7 @@ float World::getCellSize() const {
     return 1 / getHorizontalScale();
 }
 
-float World::hasCollision(const Uint16 x, const Uint16 y, const Uint16 width, const Uint16 height) {
+bool World::hasCollision(const Uint16 x, const Uint16 y, const Uint16 width, const Uint16 height) {
     bool collision = false;
 
     for (int i = 0; i < width && !collision; ++i)
