@@ -18,7 +18,7 @@ protected:
     float rx, ry; // Position in cell
     float dx, dy; // Velocity
 
-    float frictionX = 0.5f;
+    float frictionX = 0.1f;
     float frictionY = 0.91f;
 
     float width = 1;

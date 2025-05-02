@@ -11,7 +11,8 @@ using namespace Naito;
 Player::Player(const float x, const float y) :
     Entity(x, y, 3, 5),
     xInput(0),
-    yInput(0) {}
+    yInput(0),
+    jumpInput(false) {}
 
 void Player::update() {
     Entity::update();
@@ -24,6 +25,7 @@ void Player::update() {
     const float leftInput = keyboardState[SDL_SCANCODE_A] ? 1.0f : 0.0f;
     const float upInput = keyboardState[SDL_SCANCODE_W] ? 1.0f : 0.0f;
     const float downInput = keyboardState[SDL_SCANCODE_S] ? 1.0f : 0.0f;
+    jumpInput = keyboardState[SDL_SCANCODE_SPACE];
 
     xInput = rightInput - leftInput;
     yInput = upInput - downInput;
@@ -32,12 +34,16 @@ void Player::update() {
     // Otherwise apply friction
     const float targetSpeed = xInput * moveSpeed;
     if (abs(targetSpeed) > abs(dx))
-        dx += xInput * accelerationFactor * moveSpeed * Game::get()->getFrameTime();
+        dx += xInput * accelerationFactor * moveSpeed * frameTime;
     else
-        dx *= std::pow(frictionX, Game::get()->getFrameTime());
+        dx *= std::pow(frictionX, frameTime);
 
-    dy += gravity * Game::get()->getFrameTime();
-    dy *= std::pow(frictionY, Game::get()->getFrameTime());
+    if (isOnGround && jumpInput) {
+        dy -= jumpImpulse;
+    }
+
+    dy += gravity * frameTime;
+    dy *= std::pow(frictionY, frameTime);
 
     updatePositionWithCollision();
 }

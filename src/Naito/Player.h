@@ -14,12 +14,15 @@ public:
     void draw() override;
 
 private:
-    float xInput;
-    float yInput;
+    float xInput = 0;
+    float yInput = 0;
+    bool jumpInput = false;
 
     float moveSpeed = 1000.0f;
     float accelerationFactor = 0.15f;
-    float gravity = 50.0f;
+    float gravity = 500.0f;
+
+    float jumpImpulse = 100.0f;
 };
 
 }
