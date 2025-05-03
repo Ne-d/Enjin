@@ -111,12 +111,12 @@ float World::getCellSize() const {
     return 1 / getHorizontalScale();
 }
 
-bool World::hasCollision(const Uint16 x, const Uint16 y, const Uint16 width, const Uint16 height) {
+bool World::hasCollision(const Uint16 x, const Uint16 y, const Uint16 width, const Uint16 height) const {
     bool collision = false;
 
     for (int i = 0; i < width && !collision; ++i)
         for (int j = 0; j < height && !collision; ++j)
-            if (!getCellGrid().getCell(x + i, y + j).isEmpty())
+            if (grid.getCell(x + i, y + j).isSolid())
                 collision = true;
 
     return collision;

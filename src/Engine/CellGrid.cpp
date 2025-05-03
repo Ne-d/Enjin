@@ -89,6 +89,10 @@ void CellGrid::update() {
                     updateWater(x, y);
                     break;
 
+                case Element::Dirt:
+                    updateDirt(x, y);
+                    break;
+
                 default:
                     break;
                 }

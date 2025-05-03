@@ -23,6 +23,14 @@ bool Cell::isLiquid() const {
     return element == Element::Water;
 }
 
+bool Cell::isSolid() const {
+    return !isEmpty() && !isLiquid() && !isGas();
+}
+
+bool Cell::isGas() const {
+    return element == Element::Fire;
+}
+
 const char* elementName(const Element element) {
     switch (element) {
     case Element::Empty: return "Empty";
@@ -45,6 +53,8 @@ SDL_Color cellColor(const Cell cell) {
         return SDL_Color{150, 150, 150};
     case Element::Sand:
         return SDL_Color{247, 233, 155};
+    case Element::Dirt:
+        return SDL_Color{58, 41, 18};
     case Element::Water:
         return SDL_Color{22, 68, 127};
 

@@ -40,6 +40,8 @@ public:
 
     [[nodiscard]] bool isEmpty() const;
     [[nodiscard]] bool isLiquid() const;
+    [[nodiscard]] bool isSolid() const;
+    [[nodiscard]] bool isGas() const;
 };
 
 

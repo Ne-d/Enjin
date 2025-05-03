@@ -36,4 +36,9 @@ void CellGrid::updateWater(const Uint16 x, const Uint16 y) {
     else if (getCell(x + randomDir, y).element == Element::Empty)
         swapCells(x, y, randomDir, 0);
 }
+
+void CellGrid::updateDirt(const Uint16 x, const Uint16 y) {
+    // Dirt falls like sand
+    updateSand(x, y);
+}
 }

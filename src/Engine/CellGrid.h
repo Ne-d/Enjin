@@ -20,6 +20,7 @@ public:
     void updateLoop();
     void updateSand(Uint16 x, Uint16 y);
     void updateWater(Uint16 x, Uint16 y);
+    void updateDirt(Uint16 x, Uint16 y);
 
     [[nodiscard]] bool getClock() const;
     [[nodiscard]] std::mutex& getMutex();

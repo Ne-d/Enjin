@@ -32,7 +32,7 @@ public:
     [[nodiscard]] float getVerticalScale() const;
     [[nodiscard]] float getCellSize() const;
 
-    [[nodiscard]] bool hasCollision(Uint16 x, Uint16 y, Uint16 width, Uint16 height);
+    [[nodiscard]] bool hasCollision(Uint16 x, Uint16 y, Uint16 width, Uint16 height) const;
 
 private:
     CellGrid grid;
