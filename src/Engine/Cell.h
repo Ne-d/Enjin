@@ -16,6 +16,7 @@ enum class Element : uint8_t {
     Wall,
     Dirt,
     Grass,
+    Wood,
     Sand,
     Water,
     Fire,

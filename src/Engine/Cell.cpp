@@ -29,6 +29,7 @@ const char* elementName(const Element element) {
     case Element::Wall: return "Wall";
     case Element::Dirt: return "Dirt";
     case Element::Grass: return "Grass";
+    case Element::Wood: return "Wood";
     case Element::Sand: return "Sand";
     case Element::Water: return "Water";
     case Element::Fire: return "Fire";
