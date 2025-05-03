@@ -15,9 +15,9 @@ enum class Element : uint8_t {
     Empty,
     Wall,
     Dirt,
+    Grass,
     Sand,
     Water,
-    Lava,
     Fire,
     Count
 };
