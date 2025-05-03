@@ -13,6 +13,8 @@ public:
     void update() override;
     void draw() override;
 
+    void updatePosition() override;
+
 private:
     float xInput = 0;
     float yInput = 0;

@@ -20,7 +20,7 @@ void Player::update() {
     const float frameTime = Game::get()->getFrameTime();
 
     // Get movement input
-    const bool* keyboardState = SDL_GetKeyboardState(NULL);
+    const bool* keyboardState = SDL_GetKeyboardState(nullptr);
     const float rightInput = keyboardState[SDL_SCANCODE_D] ? 1.0f : 0.0f;
     const float leftInput = keyboardState[SDL_SCANCODE_A] ? 1.0f : 0.0f;
     const float upInput = keyboardState[SDL_SCANCODE_W] ? 1.0f : 0.0f;
@@ -33,7 +33,7 @@ void Player::update() {
     // Only apply movement if target speed is faster than current speed
     // Otherwise apply friction
     const float targetSpeed = xInput * moveSpeed;
-    if (abs(targetSpeed) > abs(dx))
+    if (std::abs(targetSpeed) > std::abs(dx))
         dx += xInput * accelerationFactor * moveSpeed * frameTime;
     else
         dx *= std::pow(frictionX, frameTime);
@@ -45,9 +45,91 @@ void Player::update() {
     dy += gravity * frameTime;
     dy *= std::pow(frictionY, frameTime);
 
-    updatePositionWithCollision();
+    updatePosition();
 }
 
 void Player::draw() {
     Entity::draw();
+}
+
+void Player::updatePosition() {
+    Entity::updatePosition();
+
+    Game* game = Game::get();
+    World* world = game->getWorld();
+
+    // Collisions
+    constexpr float collisionThresholdX = 0.01f;
+
+    isOnLeftWall = false;
+    // X(-) Movement collisions
+    do {
+        if (world->hasCollision(cx - 1, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx <=
+            collisionThresholdX) {
+            rx = collisionThresholdX;
+            dx = 0.0f;
+            isOnLeftWall = true;
+            }
+        if (rx < 0.0f) {
+            cx--;
+            rx++;
+        }
+    }
+    while (rx < 0.0f);
+
+    isOnRightWall = false;
+    // X(+) Movement collisions
+    do {
+        if (world->hasCollision(cx + 2, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx >= 1 -
+            collisionThresholdX) {
+            rx = 1 - collisionThresholdX;
+            dx = 0.0f;
+            isOnRightWall = true;
+            }
+        if (rx > 1.0f) {
+            cx++;
+            rx--;
+        }
+    }
+    while (rx > 1.0f);
+
+    // Y(-) Movement collisions
+    do {
+        if (world->hasCollision(cx, cy - 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height + 1)) && ry <
+            0.0f) {
+            ry = 0.0f;
+            dy = 0.0f;
+            }
+
+        isOnGround = false;
+
+        if (ry < 0.0f) {
+            cy--;
+            ry++;
+        }
+    }
+    while (ry < 0.0f);
+
+    // Y(+) Movement collisions
+    do {
+        if (world->hasCollision(cx, cy + 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height)) && ry >=
+            0.99f) {
+            ry = 0.99f;
+            dy = 0.0f;
+            isOnGround = true;
+            }
+        else
+            isOnGround = false;
+
+        if (ry > 1.0f) {
+            cy++;
+            ry--;
+        }
+    }
+    while (ry > 1.0f);
+
+    // While the player's feet are in the ground and its head isn't against a ceiling
+    while (world->hasCollision(cx, cy, width, 1) && !world->hasCollision(cx, cy - height, width, 1)) {
+        cy--;
+    }
 }

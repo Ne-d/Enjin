@@ -10,7 +10,7 @@ public:
     virtual ~Entity() = default;
 
     virtual void update();
-    virtual void updatePositionWithCollision();
+    virtual void updatePosition();
     virtual void draw();
 
 protected:

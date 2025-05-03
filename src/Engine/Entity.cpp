@@ -22,87 +22,13 @@ Entity::Entity(const float x, const float y, const float width, const float heig
 
 void Entity::update() {}
 
-void Entity::updatePositionWithCollision() {
-    Game* game = Game::get();
-    World* world = game->getWorld();
-
+void Entity::updatePosition() {
     // Integrate position based on velocity
-    rx += dx * game->getFrameTime();
-    ry += dy * game->getFrameTime();
-
-    // Collisions
-    constexpr float collisionThresholdX = 0.01f;
-
-    isOnLeftWall = false;
-    // X(-) Movement collisions
-    do {
-        if (world->hasCollision(cx - 1, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx <=
-            collisionThresholdX) {
-            rx = collisionThresholdX;
-            dx = 0.0f;
-            isOnLeftWall = true;
-        }
-        if (rx < 0.0f) {
-            cx--;
-            rx++;
-        }
-    }
-    while (rx < 0.0f);
-
-    isOnRightWall = false;
-    // X(+) Movement collisions
-    do {
-        if (world->hasCollision(cx + 2, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx >= 1 -
-            collisionThresholdX) {
-            rx = 1 - collisionThresholdX;
-            dx = 0.0f;
-            isOnRightWall = true;
-        }
-        if (rx > 1.0f) {
-            cx++;
-            rx--;
-        }
-    }
-    while (rx > 1.0f);
-
-    // Y(-) Movement collisions
-    do {
-        if (world->hasCollision(cx, cy - 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height + 1)) && ry <
-            0.0f) {
-            ry = 0.0f;
-            dy = 0.0f;
-        }
-
-        isOnGround = false;
-
-        if (ry < 0.0f) {
-            cy--;
-            ry++;
-        }
-    }
-    while (ry < 0.0f);
-
-    // Y(+) Movement collisions
-    do {
-        if (world->hasCollision(cx, cy + 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height)) && ry >=
-            0.99f) {
-            ry = 0.99f;
-            dy = 0.0f;
-            isOnGround = true;
-        }
-        else
-            isOnGround = false;
-
-        if (ry > 1.0f) {
-            cy++;
-            ry--;
-        }
-    }
-    while (ry > 1.0f);
+    rx += dx * Game::get()->getFrameTime();
+    ry += dy * Game::get()->getFrameTime();
 }
 
 void Entity::draw() {
-    SDL_SetRenderDrawColor(globalRenderer, 255, 255, 255, 255);
     const float x = static_cast<float>(cx) + rx;
     const float y = static_cast<float>(cy) + ry;
 
@@ -110,8 +36,13 @@ void Entity::draw() {
     const World* world = Game::get()->getWorld();
     world->worldToWindowCoordinates(x, y, &windowX, &windowY);
 
-    const SDL_FRect rect = SDL_FRect{windowX, windowY, width * world->getCellSize(), height * world->getCellSize()};
+    const SDL_FRect rect = SDL_FRect{windowX, windowY, width * world->getCellSize(), -height * world->getCellSize()};
+    SDL_SetRenderDrawColor(globalRenderer, 255, 255, 255, 255);
     SDL_RenderFillRect(globalRenderer, &rect);
+
+    const SDL_FRect originRect = SDL_FRect{windowX, windowY, world->getCellSize(), -world->getCellSize()};
+    SDL_SetRenderDrawColor(globalRenderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(globalRenderer, &originRect);
 
     SDL_SetRenderDrawColor(globalRenderer, 0, 0, 0, 255);
 }
