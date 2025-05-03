@@ -60,16 +60,17 @@ void Player::updatePosition() {
 
     // Collisions
     constexpr float collisionThresholdX = 0.01f;
+    constexpr int stepUpHeight = 3;
 
     isOnLeftWall = false;
     // X(-) Movement collisions
     do {
-        if (world->hasCollision(cx - 1, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx <=
+        if (world->hasCollision(cx - 1, cy - stepUpHeight, 1, static_cast<Uint16>(height - stepUpHeight)) && rx <=
             collisionThresholdX) {
             rx = collisionThresholdX;
             dx = 0.0f;
             isOnLeftWall = true;
-            }
+        }
         if (rx < 0.0f) {
             cx--;
             rx++;
@@ -80,12 +81,13 @@ void Player::updatePosition() {
     isOnRightWall = false;
     // X(+) Movement collisions
     do {
-        if (world->hasCollision(cx + 2, cy, static_cast<Uint16>(width), static_cast<Uint16>(height)) && rx >= 1 -
+        if (world->hasCollision(cx + static_cast<int>(width) + 1, cy - stepUpHeight, 1,
+                                static_cast<Uint16>(height - stepUpHeight)) && rx >= 1 -
             collisionThresholdX) {
             rx = 1 - collisionThresholdX;
             dx = 0.0f;
             isOnRightWall = true;
-            }
+        }
         if (rx > 1.0f) {
             cx++;
             rx--;
@@ -95,11 +97,11 @@ void Player::updatePosition() {
 
     // Y(-) Movement collisions
     do {
-        if (world->hasCollision(cx, cy - 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height + 1)) && ry <
+        if (world->hasCollision(cx, cy - static_cast<int>(height), static_cast<Uint16>(width) + 1, 1) && ry <
             0.0f) {
             ry = 0.0f;
             dy = 0.0f;
-            }
+        }
 
         isOnGround = false;
 
@@ -112,12 +114,12 @@ void Player::updatePosition() {
 
     // Y(+) Movement collisions
     do {
-        if (world->hasCollision(cx, cy + 1, static_cast<Uint16>(width) + 1, static_cast<Uint16>(height)) && ry >=
+        if (world->hasCollision(cx, cy + 1, static_cast<Uint16>(width) + 1, 1) && ry >=
             0.99f) {
             ry = 0.99f;
             dy = 0.0f;
             isOnGround = true;
-            }
+        }
         else
             isOnGround = false;
 
@@ -129,7 +131,8 @@ void Player::updatePosition() {
     while (ry > 1.0f);
 
     // While the player's feet are in the ground and its head isn't against a ceiling
-    while (world->hasCollision(cx, cy, width, 1) && !world->hasCollision(cx, cy - height, width, 1)) {
+    while (world->hasCollision(cx, cy, static_cast<int>(width), 1) &&
+        !world->hasCollision(cx, cy - static_cast<int>(height), static_cast<int>(width), 1)) {
         cy--;
     }
 }

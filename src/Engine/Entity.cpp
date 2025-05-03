@@ -36,13 +36,9 @@ void Entity::draw() {
     const World* world = Game::get()->getWorld();
     world->worldToWindowCoordinates(x, y, &windowX, &windowY);
 
-    const SDL_FRect rect = SDL_FRect{windowX, windowY, width * world->getCellSize(), -height * world->getCellSize()};
+    const auto rect = SDL_FRect{windowX, windowY, width * world->getCellSize(), -height * world->getCellSize()};
     SDL_SetRenderDrawColor(globalRenderer, 255, 255, 255, 255);
     SDL_RenderFillRect(globalRenderer, &rect);
-
-    const SDL_FRect originRect = SDL_FRect{windowX, windowY, world->getCellSize(), -world->getCellSize()};
-    SDL_SetRenderDrawColor(globalRenderer, 255, 0, 0, 255);
-    SDL_RenderFillRect(globalRenderer, &originRect);
 
     SDL_SetRenderDrawColor(globalRenderer, 0, 0, 0, 255);
 }

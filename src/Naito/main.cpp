@@ -128,7 +128,7 @@ int main() {
         frameCount++;
         auto frameEnd = high_resolution_clock::now();
         auto frameTime = frameEnd - frameStart;
-        Game::get()->setFrameTime(static_cast<double>(duration_cast<nanoseconds>(frameTime).count()) / 1'000'000'000);
+        Game::get()->setFrameTime(static_cast<float>(duration_cast<nanoseconds>(frameTime).count()) / 1'000'000'000.0f);
     }
 
     now = steady_clock::now();

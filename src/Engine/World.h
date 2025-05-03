@@ -46,7 +46,7 @@ private:
     SDL_Surface* surface;
     SDL_Texture* texture;
 
-    SDL_FRect displayRect;
+    SDL_FRect displayRect{};
 };
 
 } // Naito

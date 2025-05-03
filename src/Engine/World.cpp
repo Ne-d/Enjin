@@ -39,8 +39,8 @@ void World::drawCells() {
     int windowWidthInt, windowHeightInt;
     SDL_GetWindowSize(globalWindow, &windowWidthInt, &windowHeightInt);
 
-    const float windowWidth = static_cast<float>(windowWidthInt);
-    const float windowHeight(static_cast<float>(windowHeightInt));
+    const auto windowWidth = static_cast<float>(windowWidthInt);
+    const auto windowHeight(static_cast<float>(windowHeightInt));
     const float windowAspectRatio = windowWidth / windowHeight;
 
     const float worldAspectRatio = static_cast<float>(width) / static_cast<float>(height);
