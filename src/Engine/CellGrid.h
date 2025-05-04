@@ -26,6 +26,7 @@ public:
     void updateWater(Uint16 x, Uint16 y);
     void updateDirt(Uint16 x, Uint16 y);
     void updateGrass(Uint16 x, Uint16 y);
+    void updateFire(Uint16 x, Uint16 y);
 
     [[nodiscard]] bool getClock() const;
     [[nodiscard]] std::mutex& getMutex();

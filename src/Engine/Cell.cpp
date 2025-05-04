@@ -46,6 +46,8 @@ SDL_Color Cell::getColor() const {
         // Water changes color randomly every frame, not based on the value of the cell,
         // otherwise, it looks like some sort of powder.
         return getColorFromValue({22, 68, 127}, static_cast<int8_t>(randomInt(0, 127)), 0.2f);
+    case Element::Fire:
+        return getColorFromValue({252, 55, 20}, value, 0.9f);
 
     default:
         // If the debug color was anything other than pink, it wouldn't be legit.

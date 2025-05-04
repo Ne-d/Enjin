@@ -3,7 +3,6 @@
 
 
 namespace Naito {
-
 // I don't like sand. It's coarse and rough, and irritating. And it gets everywhere.
 void CellGrid::updateSand(const Uint16 x, const Uint16 y) {
     const Cell down = getCell(x, y + 1);
@@ -77,4 +76,51 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
         }
     }
 }
+
+// To avoid overflow when adding 8-bit integers.
+int8_t addInt8Positive(const int8_t a, const int8_t b) {
+    if (a + b > 127)
+        return 127;
+
+    if (a + b <= 0)
+        return 0;
+
+    return static_cast<int8_t>(a + b);
 }
+
+void CellGrid::updateFire(const Uint16 x, const Uint16 y) {
+    const Cell self = getCell(x, y);
+
+    if (self.value <= 0) {
+        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+        return;
+    }
+
+    short dx;
+    if (randomFloat(0, 1) <= 0.5)
+        dx = randomDirection();
+    else
+        dx = 0;
+
+    short dy;
+    if (randomFloat(0, 1) <= 0.9 || dx == 0)
+        dy = -1;
+    else
+        dy = 0;
+
+    const Cell neighbour = getCell(x + dx, y + dy);
+    if (neighbour.isEmpty()) {
+        setCell(x + dx, y + dy, Cell{Element::Fire, addInt8Positive(self.value, -5), DONT_UPDATE});
+        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+    }
+    else if (neighbour.element == Element::Fire) {
+        setCell(x + dx, y + dy, Cell{
+                    Element::Fire, addInt8Positive(self.value, addInt8Positive(neighbour.value, -5)), DONT_UPDATE
+                });
+        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+    }
+}
+
+
+}
+

@@ -94,6 +94,11 @@ void CellGrid::update() {
                     updateGrass(x, y);
                     break;
 
+                case Element::Fire:
+                    updateFire(x, y);
+                    break;
+
+
                 default:
                     break;
                 }
