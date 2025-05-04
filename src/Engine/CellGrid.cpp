@@ -9,9 +9,6 @@
 #include "Game.h"
 #include "World.h"
 
-#define UPDATE !clock
-#define DONT_UPDATE clock
-
 
 namespace Naito {
 CellGrid::CellGrid(const size_t width, const size_t height) :
@@ -24,7 +21,7 @@ CellGrid::CellGrid(const size_t width, const size_t height) :
     desiredTickrate(60),
     tickInterval(std::chrono::round<std::chrono::nanoseconds>(std::chrono::duration<float>(1.0f / desiredTickrate))),
     actualTickrate(0),
-    actualTickDuration(0) {
+    actualTickDuration(0), activeTickDuration(0) {
     backbuffer.assign(width * height, Cell{Element::Empty, DONT_UPDATE});
     backbuffer.assign(width * height, Cell{Element::Empty, DONT_UPDATE});
 }
@@ -91,6 +88,10 @@ void CellGrid::update() {
 
                 case Element::Dirt:
                     updateDirt(x, y);
+                    break;
+
+                case Element::Grass:
+                    updateGrass(x, y);
                     break;
 
                 default:

@@ -1,9 +1,6 @@
 #ifndef SPECIES_H
 #define SPECIES_H
 
-#include <cstdint>
-#include <string>
-
 #include "SDL.h"
 
 
@@ -27,6 +24,7 @@ enum class Element : uint8_t {
 struct Cell {
     // Data
     Element element;
+    int8_t value;
 
 private:
     uint8_t clock{};
@@ -35,8 +33,12 @@ private:
 public:
     Cell(Element element, bool clock);
 
+    // The clock can't be manipulated directly because it's a 1-bit value in an 8-bit type,
+    // so I might want to pack more data into it in the future, that's why we have to use methods.
     [[nodiscard]] bool getClock() const;
     void setClock(bool clock);
+
+    [[nodiscard]] SDL_Color getColor() const;
 
     [[nodiscard]] bool isEmpty() const;
     [[nodiscard]] bool isLiquid() const;
@@ -46,7 +48,6 @@ public:
 
 
 const char* elementName(Element element);
-SDL_Color cellColor(Cell cell);
 
 } // Naito
 

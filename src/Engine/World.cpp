@@ -72,7 +72,7 @@ void World::drawCells() {
     for (int x = 0; x < width; ++x) {
         for (int y = height - 1; y >= 0; --y) {
             const unsigned long offset = x + surface->pitch / sizeof(Uint32) * y;
-            const SDL_Color color = cellColor(grid.getCell(x, y));
+            const SDL_Color color = grid.getCell(x, y).getColor();
             *(pixels + offset) = SDL_MapRGBA(formatDetails, nullptr, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
         }
     }

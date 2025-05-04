@@ -6,6 +6,10 @@
 
 #include "Cell.h"
 
+// TODO: That's ugly af
+#define UPDATE !clock
+#define DONT_UPDATE clock
+
 
 namespace Naito {
 class CellGrid {
@@ -21,6 +25,7 @@ public:
     void updateSand(Uint16 x, Uint16 y);
     void updateWater(Uint16 x, Uint16 y);
     void updateDirt(Uint16 x, Uint16 y);
+    void updateGrass(Uint16 x, Uint16 y);
 
     [[nodiscard]] bool getClock() const;
     [[nodiscard]] std::mutex& getMutex();
