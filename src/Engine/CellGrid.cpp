@@ -44,8 +44,8 @@ void CellGrid::swapCells(const Uint16 x, const Uint16 y, const Uint16 dx, const 
     const auto cell = getCell(x, y);
     const auto neighbour = getCell(x + dx, y + dy);
 
-    setCell(x + dx, y + dy, Cell{cell.element, DONT_UPDATE});
-    setCell(x, y, Cell{neighbour.element, DONT_UPDATE});
+    setCell(x + dx, y + dy, Cell{cell.element, cell.value, DONT_UPDATE});
+    setCell(x, y, Cell{neighbour.element, neighbour.value, DONT_UPDATE});
 }
 
 void CellGrid::update() {

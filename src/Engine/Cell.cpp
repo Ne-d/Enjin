@@ -18,6 +18,10 @@ Cell::Cell(const Element element, const bool clock): element(element) {
 
 }
 
+Cell::Cell(const Element element, const int8_t value, const bool clock): element(element), value(value) {
+    setClock(clock);
+}
+
 bool Cell::getClock() const {
     return clock;
 }
@@ -31,18 +35,21 @@ SDL_Color Cell::getColor() const {
     case Element::Empty:
         return SDL_Color{0, 0, 0};
     case Element::Wall:
-        return SDL_Color{150, 150, 150};
+        return getColorFromValue({150, 150, 150}, value, 0.1f);
     case Element::Sand:
-        return SDL_Color{247, 233, 155};
+        return getColorFromValue({249, 237, 167}, value, 0.25f);
     case Element::Dirt:
-        return SDL_Color{58, 41, 18};
+        return getColorFromValue({70, 50, 30}, value, 0.5f);
     case Element::Grass:
-        return SDL_Color{126, 229, 61};
+        return getColorFromValue({126, 229, 61}, value, 0.3f);
     case Element::Water:
-        return SDL_Color{22, 68, 127};
+        // Water changes color randomly every frame, not based on the value of the cell,
+        // otherwise, it looks like some sort of powder.
+        return getColorFromValue({22, 68, 127}, static_cast<int8_t>(randomInt(0, 127)), 0.2f);
 
     default:
-        return SDL_Color{255, 255, 0};
+        // If the debug color was anything other than pink, it wouldn't be legit.
+        return SDL_Color{255, 0, 255};
     }
 }
 
@@ -60,6 +67,26 @@ bool Cell::isSolid() const {
 
 bool Cell::isGas() const {
     return element == Element::Fire;
+}
+
+SDL_Color getColorFromValue(const SDL_Color color, const int8_t value, const float influence) {
+    const float modifier = (static_cast<float>(value) / 127.0f) * influence;
+    float r = color.r;
+    float g = color.g;
+    float b = color.b;
+
+    r -= r * modifier;
+    g -= g * modifier;
+    b -= b * modifier;
+
+    const SDL_Color newColor = {
+        static_cast<uint8_t>(r),
+        static_cast<uint8_t>(g),
+        static_cast<uint8_t>(b),
+        SDL_ALPHA_OPAQUE
+    };
+
+    return newColor;
 }
 
 const char* elementName(const Element element) {

@@ -32,6 +32,7 @@ private:
     // Methods
 public:
     Cell(Element element, bool clock);
+    Cell(Element element, int8_t value, bool clock);
 
     // The clock can't be manipulated directly because it's a 1-bit value in an 8-bit type,
     // so I might want to pack more data into it in the future, that's why we have to use methods.
@@ -47,6 +48,7 @@ public:
 };
 
 
+SDL_Color getColorFromValue(SDL_Color color, int8_t value, float influence);
 const char* elementName(Element element);
 
 } // Naito
