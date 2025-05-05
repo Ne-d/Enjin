@@ -1,4 +1,7 @@
 #include "Cell.h"
+
+#include <cmath>
+
 #include "Random.h"
 
 
@@ -37,7 +40,7 @@ SDL_Color Cell::getColor() const {
     case Element::Wall:
         return getColorFromValue({150, 150, 150}, value, 0.1f);
     case Element::Sand:
-        return getColorFromValue({249, 237, 167}, value, 0.25f);
+        return getColorFromValue({249, 237, 167}, value, 0.3f);
     case Element::Dirt:
         return getColorFromValue({70, 50, 30}, value, 0.5f);
     case Element::Grass:
@@ -47,7 +50,7 @@ SDL_Color Cell::getColor() const {
         // otherwise, it looks like some sort of powder.
         return getColorFromValue({22, 68, 127}, static_cast<int8_t>(randomInt(0, 127)), 0.2f);
     case Element::Fire:
-        return getColorFromValue({252, 55, 20}, value, 0.9f);
+        return lerpColorFromValue({0, 0, 0}, {252, 55, 20}, value);
 
     default:
         // If the debug color was anything other than pink, it wouldn't be legit.
@@ -71,6 +74,7 @@ bool Cell::isGas() const {
     return element == Element::Fire;
 }
 
+// Darkens the color based on the given value
 SDL_Color getColorFromValue(const SDL_Color color, const int8_t value, const float influence) {
     const float modifier = (static_cast<float>(value) / 127.0f) * influence;
     float r = color.r;
@@ -80,6 +84,24 @@ SDL_Color getColorFromValue(const SDL_Color color, const int8_t value, const flo
     r -= r * modifier;
     g -= g * modifier;
     b -= b * modifier;
+
+    const SDL_Color newColor = {
+        static_cast<uint8_t>(r),
+        static_cast<uint8_t>(g),
+        static_cast<uint8_t>(b),
+        SDL_ALPHA_OPAQUE
+    };
+
+    return newColor;
+}
+
+// Lerps between two colors based on the given value
+SDL_Color lerpColorFromValue(const SDL_Color color1, const SDL_Color color2, const int8_t value) {
+    const float modifier = static_cast<float>(value) / 127.0f;
+
+    const float r = std::lerp(static_cast<float>(color1.r), static_cast<float>(color2.r), modifier);
+    const float g = std::lerp(static_cast<float>(color1.g), static_cast<float>(color2.g), modifier);
+    const float b = std::lerp(static_cast<float>(color1.b), static_cast<float>(color2.b), modifier);
 
     const SDL_Color newColor = {
         static_cast<uint8_t>(r),

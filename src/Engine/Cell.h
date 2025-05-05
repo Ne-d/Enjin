@@ -49,6 +49,7 @@ public:
 
 
 SDL_Color getColorFromValue(SDL_Color color, int8_t value, float influence);
+SDL_Color lerpColorFromValue(SDL_Color color1, SDL_Color color2, int8_t value);
 const char* elementName(Element element);
 
 } // Naito
