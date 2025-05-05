@@ -52,7 +52,7 @@ int main() {
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // IF using Docking Branch
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
 
     io.Fonts->Build();
 
@@ -66,16 +66,19 @@ int main() {
 
     start = steady_clock::now();
 
+    // The CellGrid (cellular automaton) simulation runs on a different thread.
     simulationThread = std::thread(&CellGrid::updateLoop, &world->getCellGrid());
 
     // =================== Main Loop ===================
 
     while (!quit) {
-        std::chrono::time_point<high_resolution_clock> frameStart = high_resolution_clock::now();
+        // Timing for frameTime
+        time_point<high_resolution_clock> frameStart = high_resolution_clock::now();
 
+        // SDL event processing
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0) {
-            ImGui_ImplSDL3_ProcessEvent(&event); // Forward your event to backend
+            ImGui_ImplSDL3_ProcessEvent(&event);
 
             switch (event.type) {
             case SDL_EVENT_QUIT:
@@ -105,21 +108,23 @@ int main() {
         // Draw
         world->draw();
 
+        // Gui
         Game::get()->drawGui();
+
+        // Render
         ImGui::Render();
         ImGui::UpdatePlatformWindows();
-
-        // Update displayed frame
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), globalRenderer);
-
         SDL_RenderPresent(globalRenderer);
 
+        // Frametime calculation
         frameCount++;
         auto frameEnd = high_resolution_clock::now();
         auto frameTime = frameEnd - frameStart;
         Game::get()->setFrameTime(static_cast<float>(duration_cast<nanoseconds>(frameTime).count()) / 1'000'000'000.0f);
     }
 
+    // Average framerate calculation
     now = steady_clock::now();
     averageFrameRate = static_cast<double>(frameCount) / static_cast<double>((now - start).count()) * 1'000'000'000;
     std::cout << "Average framerate: " << averageFrameRate << " FPS\n";
