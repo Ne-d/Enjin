@@ -56,6 +56,7 @@ void Game::drawGui() {
     if (ImGui::CollapsingHeader("Level save and load"), ImGuiTreeNodeFlags_DefaultOpen) {
         ImGui::InputText("Filename", levelFilename, 1024);
 
+        // Weird shenanigans to avoid calling the function multiple times if the button is held down
         static int clickedSave = 0;
         if (ImGui::Button("Save"))
             clickedSave++;
@@ -87,11 +88,9 @@ void Game::drawGui() {
         }
 
         ImGui::ListBox("Elements", &selectedElement, elementNames, static_cast<int>(Element::Count));
-
     }
 
     world.getCellGrid().drawGui();
-
     ImGui::End();
 }
 

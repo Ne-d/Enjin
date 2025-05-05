@@ -17,6 +17,7 @@ World::World(const size_t width, const size_t height)
       surface(SDL_CreateSurface(static_cast<int>(width), static_cast<int>(height), SDL_PIXELFORMAT_RGBX8888)),
       texture(SDL_CreateTexture(globalRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING,
                                 static_cast<int>(width), static_cast<int>(height))) {
+    // To avoid blurry pixels.
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
     entities.emplace_back(new Player(10, 10));
@@ -31,8 +32,11 @@ World::~World() {
 }
 
 void World::update() {
+    // Update all entities
     for (Entity* e : entities)
         e->update();
+
+    // This function does not update the CellGrid because that is done in a separate loop, on a different thread.
 }
 
 void World::draw() {
@@ -45,6 +49,8 @@ void World::draw() {
 
 
 void World::drawCells() {
+    // Lots of stuff to get proper, fixed aspect ratio scaling,
+    // which amounts to calculating the correct displayRect.
     int windowWidthInt, windowHeightInt;
     SDL_GetWindowSize(globalWindow, &windowWidthInt, &windowHeightInt);
 
@@ -72,12 +78,14 @@ void World::drawCells() {
     // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
     std::lock_guard guard(getCellGrid().getMutex());
 
+    // Writing to the surface will write to the texture, which cna then be drawn by the GPU.
     SDL_LockTextureToSurface(texture, nullptr, &surface);
 
     // As unclean as that is, it seems to be the way to go with SDL
     auto* pixels = static_cast<Uint32*>(surface->pixels);
     const auto formatDetails = SDL_GetPixelFormatDetails(surface->format);
 
+    // Write a pixel for each cell
     for (int x = 0; x < width; ++x) {
         for (int y = height - 1; y >= 0; --y) {
             const unsigned long offset = x + surface->pitch / sizeof(Uint32) * y;
@@ -147,8 +155,8 @@ void World::saveToFile(const std::string& fileName) {
     fileOut << "PlayerPos " << static_cast<float>(player->cx) + player->rx << " "
         << static_cast<float>(player->cy) + player->ry << "\n";
 
+    // Write contents of the CellGrid
     fileOut << "CellGrid\n";
-
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             fileOut << grid.getCell(x, y).serialise() << "\n";
@@ -197,6 +205,7 @@ void World::loadFromFile(const std::string& fileName) {
     headerStream >> buffer;
     height = std::stoi(buffer);
 
+    // Read player info
     std::string playerString;
     std::getline(fileIn, playerString);
     std::istringstream playerStream(playerString);
@@ -212,9 +221,11 @@ void World::loadFromFile(const std::string& fileName) {
     playerStream >> buffer;
     float playerY = std::stof(buffer);
 
+    // Create new player (the only entity in the list)
     entities.clear();
     entities.emplace_back(new Player(playerX, playerY));
 
+    // Read CellGrid info
     std::string cellString;
     std::getline(fileIn, cellString);
     if (cellString != "CellGrid") {
@@ -222,6 +233,7 @@ void World::loadFromFile(const std::string& fileName) {
         return;
     }
 
+    // Set each cell to the correct value
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             std::getline(fileIn, cellString);
@@ -231,9 +243,12 @@ void World::loadFromFile(const std::string& fileName) {
         }
     }
 
+    // Sanity check: verify that the file ends when expected.
     std::getline(fileIn, cellString);
     if (cellString != "End")
         std::cerr << "World::loadFromFile: End not found, found " << cellString << std::endl;
+
+    fileIn.close();
 }
 
 

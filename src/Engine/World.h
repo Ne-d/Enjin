@@ -11,6 +11,7 @@
 
 namespace Naito {
 
+/// A class that contains a CellGrid and a list of entities
 class World {
 public:
     // Methods
@@ -23,9 +24,10 @@ public:
     void drawCells();
 
     [[nodiscard]] CellGrid& getCellGrid();
+
+    // Coordinate conversion between world and window coordinates
     void windowToWorldCoordinates(float windowX, float windowY, float* worldX, float* worldY) const;
     void worldToWindowCoordinates(float worldX, float worldY, float* windowX, float* windowY) const;
-
     [[nodiscard]] float getHorizontalScale() const;
     [[nodiscard]] float getVerticalScale() const;
     [[nodiscard]] float getCellSize() const;
@@ -42,9 +44,11 @@ private:
     uint16_t width;
     uint16_t height;
 
+    // Used for drawing
     SDL_Surface* surface;
     SDL_Texture* texture;
 
+    // Rectangle in which the world is drawn
     SDL_FRect displayRect{};
 };
 

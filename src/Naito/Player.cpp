@@ -9,10 +9,7 @@
 using namespace Naito;
 
 Player::Player(const float x, const float y) :
-    Entity(x, y, 3, 5),
-    xInput(0),
-    yInput(0),
-    jumpInput(false) {}
+    Entity(x, y, 3, 5) {}
 
 void Player::update() {
     Entity::update();
@@ -48,10 +45,11 @@ void Player::update() {
     updatePosition();
 }
 
-void Player::draw() {
-    Entity::draw();
-}
-
+/** Enjminshake-like collisions. Collision checks on the sides ignore the cells next to the player's feet
+  *  to let the player move into the terrain. The player is then pushed up, which allows to prevent the player
+  *  from getting stuck into the ground easily.
+  *  When combined with the previous part, allows to step-up stairs without jumping.
+  */
 void Player::updatePosition() {
     Entity::updatePosition();
 

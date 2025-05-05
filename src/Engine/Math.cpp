@@ -1,6 +1,6 @@
 #include "Math.h"
 
-// To avoid overflow when adding 8-bit integers.
+
 int8_t addInt8Positive(const int8_t a, const int8_t b) {
     if (a + b > 127)
         return 127;

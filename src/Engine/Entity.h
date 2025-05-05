@@ -4,6 +4,7 @@
 
 namespace Naito {
 
+/// An entity that is basically copy-pasted from Enjminshake.
 class Entity {
 public:
     Entity(float x, float y, float width = 1.0f, float height = 1.0f);

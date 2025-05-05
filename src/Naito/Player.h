@@ -6,12 +6,12 @@
 
 namespace Naito {
 
+/// A player that is adapted from Enjminshake because the architecture was perfect for this.
 class Player : public Entity {
 public:
     Player(float x, float y);
 
     void update() override;
-    void draw() override;
 
     void updatePosition() override;
 

@@ -10,12 +10,14 @@ constexpr unsigned int WORLD_WIDTH = 256;
 constexpr unsigned int WORLD_HEIGHT = 192;
 
 
+/// A singleton that represents the state of the entire game.
 class Game {
 public:
     static Game* get();
     [[nodiscard]] World* getWorld();
     [[nodiscard]] bool isRunning() const;
 
+    // These values are selected by the player in the GUI
     [[nodiscard]] Element getSelectedElement() const;
     [[nodiscard]] int getBrushSize() const;
 
