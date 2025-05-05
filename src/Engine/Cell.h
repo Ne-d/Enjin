@@ -25,6 +25,7 @@ struct Cell {
     // Data
     Element element;
     int8_t value;
+    uint8_t fuel;
 
 private:
     uint8_t clock{};
@@ -33,6 +34,7 @@ private:
 public:
     Cell(Element element, bool clock);
     Cell(Element element, int8_t value, bool clock);
+    Cell(Element element, int8_t value, Uint8 fuel, bool clock);
 
     // The clock can't be manipulated directly because it's a 1-bit value in an 8-bit type,
     // so I might want to pack more data into it in the future, that's why we have to use methods.

@@ -7,7 +7,7 @@
 
 namespace Naito {
 
-Cell::Cell(const Element element, const bool clock): element(element) {
+Cell::Cell(const Element element, const bool clock): element(element), fuel(255) {
     setClock(clock);
 
     switch (element) {
@@ -21,7 +21,14 @@ Cell::Cell(const Element element, const bool clock): element(element) {
 
 }
 
-Cell::Cell(const Element element, const int8_t value, const bool clock): element(element), value(value) {
+Cell::Cell(const Element element, const int8_t value, const bool clock): element(element), value(value), fuel(255) {
+    setClock(clock);
+}
+
+Cell::Cell(const Element element, const int8_t value, const Uint8 fuel, const bool clock) :
+    element(element),
+    value(value),
+    fuel(fuel) {
     setClock(clock);
 }
 

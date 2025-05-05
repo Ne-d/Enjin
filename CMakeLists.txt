@@ -55,6 +55,8 @@ set(NAITO_SOURCE
         ${SOURCE_ROOT}/Engine/Entity.h
         ${SOURCE_ROOT}/Naito/Player.cpp
         ${SOURCE_ROOT}/Naito/Player.h
+        src/Engine/Math.h
+        src/Engine/Math.cpp
 )
 
 add_executable(Naito

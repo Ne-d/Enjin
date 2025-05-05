@@ -1,5 +1,8 @@
+#include <iostream>
+
 #include "CellGrid.h"
 #include "Random.h"
+#include "Math.h"
 
 
 namespace Naito {
@@ -59,7 +62,7 @@ void CellGrid::updateDirt(const Uint16 x, const Uint16 y) {
 }
 
 void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
-    updateSand(x, y);
+    const Cell self = getCell(x, y);
 
     // Spread to nearby dirt
     bool foundDirt = false;
@@ -75,17 +78,42 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
             }
         }
     }
-}
 
-// To avoid overflow when adding 8-bit integers.
-int8_t addInt8Positive(const int8_t a, const int8_t b) {
-    if (a + b > 127)
-        return 127;
+    // Catch fire
+    bool foundFire = false;
+    for (int i = x - 1; i <= x + 1 && !foundFire; ++i) {
+        for (int j = y - 1; j <= y + 1 && !foundFire; ++j) {
+            if (getCell(i, j).element == Element::Fire) {
+                // Set cell on fire by setting fuel to max
+                setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -1), DONT_UPDATE});
 
-    if (a + b <= 0)
-        return 0;
+                // Stop the loop
+                foundFire = true;
+            }
+        }
+    }
 
-    return static_cast<int8_t>(a + b);
+    // Spread fire
+    if (self.fuel < 255) { // If the cell has started burning
+        const short dx = randomDirection();
+        const short dy = randomDirection();
+
+        if (getCell(x, y).isEmpty()) {
+            // Create new fire cell
+            setCell(x + dx, y + dy, Cell{Element::Fire, DONT_UPDATE});
+
+            std::printf("Spreading fire to (%d, %d)", x + dx, y + dy);
+
+            // Decay fuel
+            setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -1), DONT_UPDATE});
+        }
+    }
+
+    if (self.fuel == 0)
+        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+
+    // Grass falls like sand
+    updateSand(x, y);
 }
 
 void CellGrid::updateFire(const Uint16 x, const Uint16 y) {
@@ -119,8 +147,9 @@ void CellGrid::updateFire(const Uint16 x, const Uint16 y) {
                 });
         setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
     }
+    else
+        setCell(x, y, Cell{Element::Fire, addInt8Positive(self.value, -5), DONT_UPDATE});
 }
-
 
 }
 
