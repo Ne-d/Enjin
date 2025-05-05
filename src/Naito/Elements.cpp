@@ -22,20 +22,20 @@ void CellGrid::updateSand(const Uint16 x, const Uint16 y) {
 
 
 void CellGrid::updateWater(const Uint16 x, const Uint16 y) {
-    if (getCell(x, y + 1).element == Element::Empty) {
+    if (getCell(x, y + 1).isEmptyOrGas()) {
         swapCells(x, y, 0, 1);
         return;
     }
 
     const short randomDir = randomDirection();
-    if (getCell(x + randomDir, y + 1).element == Element::Empty)
+    if (getCell(x + randomDir, y + 1).isEmptyOrGas())
         swapCells(x, y, randomDir, 1);
 
-    else if (getCell(x - randomDir, y + 1).element == Element::Empty) {
+    else if (getCell(x - randomDir, y + 1).isEmptyOrGas()) {
         swapCells(x, y, -randomDir, 1);
     }
 
-    else if (getCell(x + randomDir, y).element == Element::Empty)
+    else if (getCell(x + randomDir, y).isEmptyOrGas())
         swapCells(x, y, randomDir, 0);
 }
 

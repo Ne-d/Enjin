@@ -81,6 +81,10 @@ bool Cell::isGas() const {
     return element == Element::Fire;
 }
 
+bool Cell::isEmptyOrGas() const {
+    return isEmpty() || isGas();
+}
+
 // Darkens the color based on the given value
 SDL_Color getColorFromValue(const SDL_Color color, const int8_t value, const float influence) {
     const float modifier = (static_cast<float>(value) / 127.0f) * influence;

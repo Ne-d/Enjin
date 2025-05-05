@@ -47,6 +47,7 @@ public:
     [[nodiscard]] bool isLiquid() const;
     [[nodiscard]] bool isSolid() const;
     [[nodiscard]] bool isGas() const;
+    [[nodiscard]] bool isEmptyOrGas() const; // Because I got tired of writing conditions with both.
 };
 
 
