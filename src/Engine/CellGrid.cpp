@@ -53,9 +53,6 @@ void CellGrid::update() {
     const high_resolution_clock::time_point start = high_resolution_clock::now();
     actualTickDuration = start - lastUpdate;
 
-    if (getCell(10, 10).isEmpty())
-        setCell(10, 10, Cell{Element::Sand, UPDATE});
-
     // Paint Cells
     SDL_MouseButtonFlags mouseButtonFlags;
     float mouseX, mouseY;

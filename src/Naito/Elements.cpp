@@ -84,7 +84,7 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
     for (int i = x - 1; i <= x + 1 && !foundFire; ++i) {
         for (int j = y - 1; j <= y + 1 && !foundFire; ++j) {
             if (getCell(i, j).element == Element::Fire) {
-                // Set cell on fire by setting fuel to max
+                // Set cell on fire by setting fuel to less than max
                 setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -1), DONT_UPDATE});
 
                 // Stop the loop
@@ -95,17 +95,29 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
 
     // Spread fire
     if (self.fuel < 255) { // If the cell has started burning
-        const short dx = randomDirection();
-        const short dy = randomDirection();
+        const short dx = static_cast<short>(randomInt(-1, 1));
+        const short dy = static_cast<short>(randomInt(-1, 1));
 
-        if (getCell(x, y).isEmpty()) {
+        if (getCell(x + dx, y + dy).isEmpty()) {
             // Create new fire cell
             setCell(x + dx, y + dy, Cell{Element::Fire, DONT_UPDATE});
 
-            std::printf("Spreading fire to (%d, %d)", x + dx, y + dy);
-
             // Decay fuel
-            setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -1), DONT_UPDATE});
+            setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -20), DONT_UPDATE});
+        }
+    }
+
+    // Extinguish fire
+    bool foundWater = false;
+    for (int i = x - 1; i <= x + 1 && !foundWater; ++i) {
+        for (int j = y - 1; j <= y + 1 && !foundWater; ++j) {
+            if (getCell(i, j).element == Element::Water) {
+                // Extinguish fire by setting fuel to max
+                setCell(x, y, Cell{Element::Grass, self.value, 255, DONT_UPDATE});
+
+                // Stop the loop
+                foundWater = true;
+            }
         }
     }
 

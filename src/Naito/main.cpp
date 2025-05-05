@@ -64,12 +64,6 @@ int main() {
 
     world = Game::get()->getWorld();
 
-    for (int y = 50; y < 100; ++y) {
-        for (int x = 50; x < 100; ++x) {
-            world->getCellGrid().setCell(x, y, Cell{Element::Water, world->getCellGrid().getClock()});
-        }
-    }
-
     start = steady_clock::now();
 
     simulationThread = std::thread(&CellGrid::updateLoop, &world->getCellGrid());
@@ -104,11 +98,6 @@ int main() {
         SDL_RenderClear(globalRenderer);
 
         prev = now;
-
-        SDL_PumpEvents();
-        const bool* keyboardState = SDL_GetKeyboardState(nullptr);
-        if (keyboardState[SDL_SCANCODE_SPACE])
-            world->getCellGrid().setCell(10, 10, Cell{Element::Sand, world->getCellGrid().getClock()});
 
         // Update world
         world->update();
