@@ -103,7 +103,7 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
             setCell(x + dx, y + dy, Cell{Element::Fire, DONT_UPDATE});
 
             // Decay fuel
-            setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -20), DONT_UPDATE});
+            setCell(x, y, Cell{Element::Grass, self.value, addUint8(self.fuel, -50), DONT_UPDATE});
         }
     }
 

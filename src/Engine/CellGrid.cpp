@@ -18,7 +18,7 @@ CellGrid::CellGrid(const size_t width, const size_t height) :
     frontbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
     height(height),
     width(width),
-    desiredTickrate(60),
+    desiredTickrate(100),
     tickInterval(std::chrono::round<std::chrono::nanoseconds>(std::chrono::duration<float>(1.0f / desiredTickrate))),
     actualTickrate(0),
     actualTickDuration(0), activeTickDuration(0) {
