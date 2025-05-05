@@ -20,8 +20,8 @@ private:
     float yInput = 0;
     bool jumpInput = false;
 
-    float moveSpeed = 1000.0f;
-    float accelerationFactor = 0.15f;
+    float moveSpeed = 50.0f;
+    float accelerationFactor = 5.0f;
     float gravity = 500.0f;
 
     float jumpImpulse = 100.0f;

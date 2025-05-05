@@ -37,6 +37,8 @@ private:
 
     bool running;
     float frameTime;
+
+    char levelFilename[1024] = "defaultLevel.txt";
 };
 }
 

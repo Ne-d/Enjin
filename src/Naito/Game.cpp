@@ -45,16 +45,38 @@ Element Game::getSelectedElement() const {
 void Game::drawGui() {
     ImGui::Begin("Game");
 
-    ImGui::SeparatorText("Performance");
-    const float frameRate = 1.0f / frameTime;
-    ImGui::Value("Framerate", frameRate);
+    if (ImGui::CollapsingHeader("Performance"), ImGuiTreeNodeFlags_DefaultOpen) {
+        const float frameRate = 1.0f / frameTime;
+        ImGui::Value("Framerate", frameRate);
 
-    const float frameTimeMs = frameTime * 1000.0f;
-    ImGui::Value("Frametime", frameTimeMs);
+        const float frameTimeMs = frameTime * 1000.0f;
+        ImGui::Value("Frametime", frameTimeMs);
+    }
 
-    ImGui::SeparatorText("Controls");
-    ImGui::BeginTabBar("Main Tabs");
-    if (ImGui::BeginTabItem("Placement")) {
+    if (ImGui::CollapsingHeader("Level save and load"), ImGuiTreeNodeFlags_DefaultOpen) {
+        ImGui::InputText("Filename", levelFilename, 1024);
+
+        static int clickedSave = 0;
+        if (ImGui::Button("Save"))
+            clickedSave++;
+
+        if (clickedSave & 1) {
+            world.saveToFile(levelFilename);
+            clickedSave = 0;
+        }
+
+        ImGui::SameLine();
+        static int clickedLoad = 0;
+        if (ImGui::Button("Load"))
+            clickedLoad++;
+
+        if (clickedLoad & 1) {
+            world.loadFromFile(levelFilename);
+            clickedLoad = 0;
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Placement"), ImGuiTreeNodeFlags_DefaultOpen) {
         ImGui::InputInt("Brush size", &brushSize);
 
         const char* elementNames[static_cast<Uint8>(Element::Count)];
@@ -66,14 +88,9 @@ void Game::drawGui() {
 
         ImGui::ListBox("Elements", &selectedElement, elementNames, static_cast<int>(Element::Count));
 
-        ImGui::EndTabItem();
     }
 
-    if (ImGui::BeginTabItem("CellGrid")) {
-        world.getCellGrid().drawGui();
-        ImGui::EndTabItem();
-    }
-    ImGui::EndTabBar();
+    world.getCellGrid().drawGui();
 
     ImGui::End();
 }

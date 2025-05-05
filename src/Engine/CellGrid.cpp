@@ -153,18 +153,16 @@ bool CellGrid::drawGui() {
                      static_cast<float>(duration_cast<nanoseconds>(tickInterval).count()));
     }
 
-    if (ImGui::CollapsingHeader("Element cell count")) {
 #ifndef NDEBUG
+    if (ImGui::CollapsingHeader("Element cell count")) {
         const auto elementCounts = countCells(); // Pretty expensive
 
         for (unsigned int i = 0; i < static_cast<int>(Element::Count); ++i) {
             std::string name = elementName(static_cast<Element>(i));
             ImGui::Value(name.c_str(), elementCounts.at(i));
         }
-#else
-        ImGui::Text("Element cell count disabled for performance");
-#endif
     }
+#endif
 
     return true;
 }

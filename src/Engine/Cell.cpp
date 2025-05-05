@@ -1,6 +1,7 @@
 #include "Cell.h"
 
 #include <cmath>
+#include <sstream>
 
 #include "Random.h"
 
@@ -87,6 +88,20 @@ bool Cell::isEmptyOrGas() const {
     return isEmpty() || isGas();
 }
 
+std::string Cell::serialise() const {
+    std::string result{};
+    std::stringstream stream{result};
+
+    stream << serialiseElement(element) << " "
+        << std::to_string(value) << " "
+        << std::to_string(fuel) << " "
+        << std::to_string(clock);
+
+    //stream.flush();
+
+    return stream.str();
+}
+
 // Darkens the color based on the given value
 SDL_Color getColorFromValue(const SDL_Color color, const int8_t value, const float influence) {
     const float modifier = (static_cast<float>(value) / 127.0f) * influence;
@@ -138,6 +153,33 @@ const char* elementName(const Element element) {
     case Element::Fire: return "Fire";
     default: return "unknown";
     }
+}
+
+std::string serialiseElement(Element element) {
+    return std::to_string(static_cast<int>(element));
+}
+
+Element deserialiseElement(const std::string& serialised) {
+    return static_cast<Element>(std::stoi(serialised));
+}
+
+Cell deserialiseCell(const std::string& serialised) {
+    std::istringstream stream{serialised};
+    std::string buffer;
+
+    stream >> buffer;
+    const Element element = deserialiseElement(buffer);
+
+    stream >> buffer;
+    const int8_t value = static_cast<int8_t>(std::stoi(buffer));
+
+    stream >> buffer;
+    const uint8_t fuel = static_cast<uint8_t>(std::stoi(buffer));
+
+    stream >> buffer;
+    const uint8_t clock = static_cast<uint8_t>(std::stoi(buffer));
+
+    return Cell{element, value, fuel, clock == 1};
 }
 
 } // Naito

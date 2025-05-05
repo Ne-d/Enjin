@@ -1,6 +1,8 @@
 #ifndef SPECIES_H
 #define SPECIES_H
 
+#include <string>
+
 #include "SDL.h"
 
 
@@ -48,12 +50,19 @@ public:
     [[nodiscard]] bool isSolid() const;
     [[nodiscard]] bool isGas() const;
     [[nodiscard]] bool isEmptyOrGas() const; // Because I got tired of writing conditions with both.
+
+    [[nodiscard]] std::string serialise() const;
 };
 
 
 SDL_Color getColorFromValue(SDL_Color color, int8_t value, float influence);
 SDL_Color lerpColorFromValue(SDL_Color color1, SDL_Color color2, int8_t value);
+
 const char* elementName(Element element);
+std::string serialiseElement(Element element);
+Element deserialiseElement(const std::string& serialised);
+
+Cell deserialiseCell(const std::string& serialised);
 
 } // Naito
 

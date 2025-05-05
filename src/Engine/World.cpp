@@ -1,6 +1,8 @@
 #include "World.h"
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "Player.h"
 #include "Render.h"
@@ -10,7 +12,6 @@ namespace Naito {
 
 World::World(const size_t width, const size_t height)
     : grid(width, height),
-      clock(0),
       width(width),
       height(height),
       surface(SDL_CreateSurface(static_cast<int>(width), static_cast<int>(height), SDL_PIXELFORMAT_RGBX8888)),
@@ -19,6 +20,14 @@ World::World(const size_t width, const size_t height)
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
     entities.emplace_back(new Player(10, 10));
+}
+
+World::~World() {
+    SDL_DestroySurface(surface);
+    SDL_DestroyTexture(texture);
+
+    for (const Entity* e : entities)
+        delete e;
 }
 
 void World::update() {
@@ -81,10 +90,6 @@ void World::drawCells() {
     SDL_RenderTexture(globalRenderer, texture, nullptr, &displayRect);
 }
 
-unsigned long long World::getClock() const {
-    return clock;
-}
-
 CellGrid& World::getCellGrid() {
     return grid;
 }
@@ -120,6 +125,115 @@ bool World::hasCollision(const Uint16 x, const Uint16 y, const Uint16 width, con
                 collision = true;
 
     return collision;
+}
+
+void World::saveToFile(const std::string& fileName) {
+    std::lock_guard guard(getCellGrid().getMutex());
+
+    std::setlocale(LC_ALL, "C"); // To avoid decimal point nonsense (learned that the hard way)
+
+    std::ofstream fileOut(fileName);
+
+    if (!fileOut.is_open()) {
+        std::cerr << "World::saveToFile: Failed to open file " << fileName << std::endl;
+        return;
+    }
+
+    // Write header
+    fileOut << "NaitoLevel v1 " << width << " " << height << "\n";
+
+    // Write player position
+    const Entity* player = entities.front();
+    fileOut << "PlayerPos " << static_cast<float>(player->cx) + player->rx << " "
+        << static_cast<float>(player->cy) + player->ry << "\n";
+
+    fileOut << "CellGrid\n";
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            fileOut << grid.getCell(x, y).serialise() << "\n";
+        }
+    }
+
+    fileOut << "End";
+
+    fileOut.flush();
+    fileOut.close();
+}
+
+void World::loadFromFile(const std::string& fileName) {
+    std::lock_guard guard(getCellGrid().getMutex());
+
+    std::setlocale(LC_ALL, "C"); // Still don't trust whatever locale might be set
+
+    std::ifstream fileIn(fileName);
+
+    if (!fileIn.is_open()) {
+        std::cerr << "World::loadFromFile: Failed to open file " << fileName << std::endl;
+        return;
+    }
+
+    // Read header
+    std::string headerString;
+    std::getline(fileIn, headerString);
+    std::istringstream headerStream(headerString);
+    std::string buffer;
+
+    headerStream >> buffer;
+    if (buffer != "NaitoLevel") {
+        std::cerr << "World::loadFromFile: File has incorrect header, found " << buffer << std::endl;
+        return;
+    }
+
+    headerStream >> buffer;
+    if (buffer != "v1") {
+        std::cerr << "World::loadFromFile: File has incorrect version, found " << buffer << std::endl;
+        return;
+    }
+
+    headerStream >> buffer;
+    width = std::stoi(buffer);
+
+    headerStream >> buffer;
+    height = std::stoi(buffer);
+
+    std::string playerString;
+    std::getline(fileIn, playerString);
+    std::istringstream playerStream(playerString);
+    playerStream >> buffer;
+    if (buffer != "PlayerPos") {
+        std::cerr << "World::loadFromFile: PlayerPos not found, found " << buffer << std::endl;
+        return;
+    }
+
+    playerStream >> buffer;
+    float playerX = std::stof(buffer);
+
+    playerStream >> buffer;
+    float playerY = std::stof(buffer);
+
+    entities.clear();
+    entities.emplace_back(new Player(playerX, playerY));
+
+    std::string cellString;
+    std::getline(fileIn, cellString);
+    if (cellString != "CellGrid") {
+        std::cerr << "World::loadFromFile: CellGrid not found, found " << cellString << std::endl;
+        return;
+    }
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            std::getline(fileIn, cellString);
+
+            Cell cell = deserialiseCell(cellString);
+            grid.setCell(x, y, cell);
+        }
+    }
+
+    std::getline(fileIn, cellString);
+    if (cellString != "End")
+        std::cerr << "World::loadFromFile: End not found, found " << cellString << std::endl;
 }
 
 
