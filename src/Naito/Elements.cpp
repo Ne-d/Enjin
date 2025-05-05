@@ -163,5 +163,54 @@ void CellGrid::updateFire(const Uint16 x, const Uint16 y) {
         setCell(x, y, Cell{Element::Fire, addInt8Positive(self.value, -5), DONT_UPDATE});
 }
 
+void CellGrid::updateWood(Uint16 x, Uint16 y) {
+    const Cell self = getCell(x, y);
+
+    // Catch fire
+    bool foundFire = false;
+    for (int i = x - 1; i <= x + 1 && !foundFire; ++i) {
+        for (int j = y - 1; j <= y + 1 && !foundFire; ++j) {
+            if (getCell(i, j).element == Element::Fire) {
+                // Set cell on fire by setting fuel to less than max
+                setCell(x, y, Cell{Element::Wood, self.value, addUint8(self.fuel, -1), DONT_UPDATE});
+
+                // Stop the loop
+                foundFire = true;
+            }
+        }
+    }
+
+    // Spread fire
+    if (self.fuel < 255) { // If the cell has started burning
+        const short dx = static_cast<short>(randomInt(-1, 1));
+        const short dy = static_cast<short>(randomInt(-1, 1));
+
+        if (getCell(x + dx, y + dy).isEmpty()) {
+            // Create new fire cell
+            setCell(x + dx, y + dy, Cell{Element::Fire, DONT_UPDATE});
+
+            // Decay fuel
+            setCell(x, y, Cell{Element::Wood, self.value, addUint8(self.fuel, -20), DONT_UPDATE});
+        }
+    }
+
+    // Extinguish fire
+    bool foundWater = false;
+    for (int i = x - 1; i <= x + 1 && !foundWater; ++i) {
+        for (int j = y - 1; j <= y + 1 && !foundWater; ++j) {
+            if (getCell(i, j).element == Element::Water) {
+                // Extinguish fire by setting fuel to max
+                setCell(x, y, Cell{Element::Wood, self.value, 255, DONT_UPDATE});
+
+                // Stop the loop
+                foundWater = true;
+            }
+        }
+    }
+
+    if (self.fuel == 0)
+        setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+}
+
 }
 

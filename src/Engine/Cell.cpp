@@ -58,6 +58,8 @@ SDL_Color Cell::getColor() const {
         return getColorFromValue({22, 68, 127}, static_cast<int8_t>(randomInt(0, 127)), 0.2f);
     case Element::Fire:
         return lerpColorFromValue({0, 0, 0}, {252, 55, 20}, value);
+    case Element::Wood:
+        return getColorFromValue({76, 54, 20}, value, 0.3f);
 
     default:
         // If the debug color was anything other than pink, it wouldn't be legit.
