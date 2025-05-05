@@ -9,10 +9,13 @@
 #include "Game.h"
 #include "World.h"
 
+// These macros are made to avoid having to enter clock values manually because they're confusing.
+#define UPDATE !this->clock
+#define DONT_UPDATE this->clock
+
 
 namespace Naito {
 CellGrid::CellGrid(const size_t width, const size_t height) :
-    generation(0),
     clock(false),
     backbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
     frontbuffer(std::vector(width * height, Cell{Element::Empty, DONT_UPDATE})),
@@ -27,6 +30,7 @@ CellGrid::CellGrid(const size_t width, const size_t height) :
 }
 
 Cell CellGrid::getCell(const Uint16 x, const Uint16 y) const {
+    // If trying to access a cell outside the grid, pretend there is a wall.
     if (x < 0 || x >= width || y < 0 || y >= height)
         return Cell{Element::Wall, DONT_UPDATE};
 
@@ -34,6 +38,7 @@ Cell CellGrid::getCell(const Uint16 x, const Uint16 y) const {
 }
 
 void CellGrid::setCell(const Uint16 x, const Uint16 y, const Cell cell) {
+    // If trying to set a cell outside the grid, it is safe to do nothing.
     if (x < 0 || x >= width || y < 0 || y >= height)
         return;
 
@@ -44,16 +49,25 @@ void CellGrid::swapCells(const Uint16 x, const Uint16 y, const Uint16 dx, const 
     const auto cell = getCell(x, y);
     const auto neighbour = getCell(x + dx, y + dy);
 
-    setCell(x + dx, y + dy, Cell{cell.element, cell.value, DONT_UPDATE});
-    setCell(x, y, Cell{neighbour.element, neighbour.value, DONT_UPDATE});
+    setCell(x + dx, y + dy, Cell{cell.element, cell.value, cell.fuel, DONT_UPDATE});
+    setCell(x, y, Cell{neighbour.element, neighbour.value, neighbour.fuel, DONT_UPDATE});
+}
+
+void CellGrid::paint(const int x, const int y, const int brushSize) {
+    for (int i = x - brushSize / 2; i < x + brushSize; i++)
+        for (int j = y - brushSize / 2; j < y + brushSize; j++)
+            setCell(std::floor(i), std::floor(j), Cell{Game::get()->getSelectedElement(), UPDATE});
 }
 
 void CellGrid::update() {
+    // Timing
+    //=======
     using namespace std::chrono;
     const high_resolution_clock::time_point start = high_resolution_clock::now();
     actualTickDuration = start - lastUpdate;
 
     // Paint Cells
+    // ===========
     SDL_MouseButtonFlags mouseButtonFlags;
     float mouseX, mouseY;
     mouseButtonFlags = SDL_GetMouseState(&mouseX, &mouseY);
@@ -65,15 +79,22 @@ void CellGrid::update() {
         const int y = std::floor(floatY);
         const int brushSize = Game::get()->getBrushSize();
 
-        for (int i = x - brushSize / 2; i < x + brushSize; i++)
-            for (int j = y - brushSize / 2; j < y + brushSize; j++)
-                setCell(std::floor(i), std::floor(j), Cell{Game::get()->getSelectedElement(), UPDATE});
+        paint(x, y, brushSize);
     }
 
+    // Update cells
+    // ============
+
+    // Update goes from the lowest row to the highest, then from left to right.
+    // In this type of cellular automaton, the update order changes the behaviour of the cells,
+    // so updating from bottom to top is necessary.
     for (unsigned int y = height - 1; y > 0; --y) {
         for (unsigned int x = 0; x < width; ++x) {
+
             const Cell cell = getCell(x, y);
             if (cell.getClock() == UPDATE) {
+
+                // Run the corresponding update function for each cell that needs to be updated.
                 switch (cell.element) {
                 case Element::Sand:
                     updateSand(x, y);
@@ -106,9 +127,14 @@ void CellGrid::update() {
         }
     }
 
+    // Flip the clock. All cells that have been updated,
+    // and were marked as "no longer need to update", now need to be updated again
     clock = !clock;
+
     copyToFrontbuffer();
 
+    // Timing
+    // ======
     actualTickrate = 1'000'000'000.0f / static_cast<float>(duration_cast<nanoseconds>(actualTickDuration).count());
 
     lastUpdate = start;
@@ -153,7 +179,7 @@ bool CellGrid::drawGui() {
                      static_cast<float>(duration_cast<nanoseconds>(tickInterval).count()));
     }
 
-#ifndef NDEBUG
+#ifndef NDEBUG // This only runs in debug builds because it's useless for a player, and eats up a lot of resources.
     if (ImGui::CollapsingHeader("Element cell count")) {
         const auto elementCounts = countCells(); // Pretty expensive
 

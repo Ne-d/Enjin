@@ -1,32 +1,38 @@
-#include <iostream>
-
 #include "CellGrid.h"
 #include "Random.h"
 #include "Math.h"
+
+// These macros are made to avoid having to enter clock values manually because they're confusing.
+#define UPDATE !this->clock
+#define DONT_UPDATE this->clock
 
 
 namespace Naito {
 // I don't like sand. It's coarse and rough, and irritating. And it gets everywhere.
 void CellGrid::updateSand(const Uint16 x, const Uint16 y) {
+    // If we can go down, do so.
     const Cell down = getCell(x, y + 1);
     if (down.isEmpty() || down.isLiquid()) {
         swapCells(x, y, 0, 1);
         return;
     }
 
+    // Otherwise, try to go down diagonally.
     const int randomDir = randomDirection();
     const Cell downRand = getCell(x + randomDir, y + 1);
     if (downRand.isEmpty() || downRand.isLiquid())
         swapCells(x, y, randomDir, 1);
 }
 
-
+// Water takes forever to flatten out, but being physically accurate wasn't in the design docs.
 void CellGrid::updateWater(const Uint16 x, const Uint16 y) {
+    // If we can go down, do so.
     if (getCell(x, y + 1).isEmptyOrGas()) {
         swapCells(x, y, 0, 1);
         return;
     }
 
+    // Otherwise, try to go down diagonally.
     const short randomDir = randomDirection();
     if (getCell(x + randomDir, y + 1).isEmptyOrGas())
         swapCells(x, y, randomDir, 1);
@@ -35,6 +41,7 @@ void CellGrid::updateWater(const Uint16 x, const Uint16 y) {
         swapCells(x, y, -randomDir, 1);
     }
 
+    // Otherwise, go sideways.
     else if (getCell(x + randomDir, y).isEmptyOrGas())
         swapCells(x, y, randomDir, 0);
 }
@@ -121,8 +128,11 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
         }
     }
 
-    if (self.fuel == 0)
+    // Empty the cell if it reaches zero fuel.
+    if (self.fuel == 0) {
         setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
+        return;
+    }
 
     // Grass falls like sand
     updateSand(x, y);
@@ -131,17 +141,20 @@ void CellGrid::updateGrass(const Uint16 x, const Uint16 y) {
 void CellGrid::updateFire(const Uint16 x, const Uint16 y) {
     const Cell self = getCell(x, y);
 
+    // Empty the cell if it reaches zero fuel.
     if (self.value <= 0) {
         setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
         return;
     }
 
+    // Setup random motion: potentially move sideways.
     short dx;
     if (randomFloat(0, 1) <= 0.5)
         dx = randomDirection();
     else
         dx = 0;
 
+    // Setup random motion: likely move up.
     short dy;
     if (randomFloat(0, 1) <= 0.9 || dx == 0)
         dy = -1;
@@ -149,17 +162,20 @@ void CellGrid::updateFire(const Uint16 x, const Uint16 y) {
         dy = 0;
 
     const Cell neighbour = getCell(x + dx, y + dy);
+
+    // If we can go to the chosen position, do so, and decrease our value.
     if (neighbour.isEmpty()) {
         setCell(x + dx, y + dy, Cell{Element::Fire, addInt8Positive(self.value, -5), DONT_UPDATE});
         setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
     }
+    // If the chosen position is already occupied by fire, increase its value.
     else if (neighbour.element == Element::Fire) {
         setCell(x + dx, y + dy, Cell{
-                    Element::Fire, addInt8Positive(self.value, addInt8Positive(neighbour.value, -5)), DONT_UPDATE
+                    Element::Fire, addInt8Positive(self.value, addInt8Positive(neighbour.value, 5)), DONT_UPDATE
                 });
         setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
     }
-    else
+    else // Otherwise, don't move, but decrease our value
         setCell(x, y, Cell{Element::Fire, addInt8Positive(self.value, -5), DONT_UPDATE});
 }
 
@@ -208,6 +224,7 @@ void CellGrid::updateWood(Uint16 x, Uint16 y) {
         }
     }
 
+    // Empty the cell if it reaches zero fuel.
     if (self.fuel == 0)
         setCell(x, y, Cell{Element::Empty, DONT_UPDATE});
 }
