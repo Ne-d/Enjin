@@ -78,7 +78,7 @@ void World::drawCells() {
     // Critical section: Drawing and copying data to frontbuffer cannot happen at the same time
     std::lock_guard guard(getCellGrid().getMutex());
 
-    // Writing to the surface will write to the texture, which cna then be drawn by the GPU.
+    // Writing to the surface will write to the texture, which can then be drawn by the GPU.
     SDL_LockTextureToSurface(texture, nullptr, &surface);
 
     // As unclean as that is, it seems to be the way to go with SDL

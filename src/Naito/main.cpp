@@ -69,6 +69,8 @@ int main() {
     // The CellGrid (cellular automaton) simulation runs on a different thread.
     simulationThread = std::thread(&CellGrid::updateLoop, &world->getCellGrid());
 
+    world->loadFromFile("defaultLevel.txt");
+
     // =================== Main Loop ===================
 
     while (!quit) {
@@ -136,6 +138,8 @@ int main() {
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
+
+    SDL_Quit();
 
     return EXIT_SUCCESS;
 }

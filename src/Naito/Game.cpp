@@ -45,7 +45,7 @@ Element Game::getSelectedElement() const {
 void Game::drawGui() {
     ImGui::Begin("Game");
 
-    if (ImGui::CollapsingHeader("Performance"), ImGuiTreeNodeFlags_DefaultOpen) {
+    if (ImGui::CollapsingHeader("Performance", ImGuiTreeNodeFlags_DefaultOpen)) {
         const float frameRate = 1.0f / frameTime;
         ImGui::Value("Framerate", frameRate);
 
@@ -53,7 +53,7 @@ void Game::drawGui() {
         ImGui::Value("Frametime", frameTimeMs);
     }
 
-    if (ImGui::CollapsingHeader("Level save and load"), ImGuiTreeNodeFlags_DefaultOpen) {
+    if (ImGui::CollapsingHeader("Level save and load", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::InputText("Filename", levelFilename, 1024);
 
         // Weird shenanigans to avoid calling the function multiple times if the button is held down
@@ -77,7 +77,7 @@ void Game::drawGui() {
         }
     }
 
-    if (ImGui::CollapsingHeader("Placement"), ImGuiTreeNodeFlags_DefaultOpen) {
+    if (ImGui::CollapsingHeader("Placement", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::InputInt("Brush size", &brushSize);
 
         const char* elementNames[static_cast<Uint8>(Element::Count)];
